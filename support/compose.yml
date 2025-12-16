@@ -1,0 +1,11 @@
+services:
+  procpag:
+    image: docker.io/erickemprobr/procpag:latest 
+    ports: 
+    - "8089:8089"
+    networks:
+    - fase3net
+
+
+networks:
+  fase3net:
