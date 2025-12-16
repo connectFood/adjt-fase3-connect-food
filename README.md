@@ -3,5 +3,5 @@
 ## Serviço de pagamento eventualmente disponível: 
 
 ```bash
-docker compose -f support/compose.yml up`
+docker compose -f support/compose.yml up
 ```
