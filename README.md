@@ -1,7 +1,7 @@
 # Repositório base para o projeto da Fase 03
 
-## Serviço de pagamento eventualmente disponível: 
+Faça um _fork_ desse projeto, e continue a partir deste.
 
-```bash
-docker compose -f support/compose.yml up
-```
+## Serviço de pagamento eventualmente disponível:
+
+Para ver os endpoints disponiveis, acesse `localhost:8089/openapi.yml`

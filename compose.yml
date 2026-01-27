@@ -6,6 +6,8 @@ services:
     networks:
     - fase3net
 
+  # adicione os seus outros serviços aqui
+  # faça com que todos os serviços usem a mesma rede 'fase3net'
 
 networks:
   fase3net:
