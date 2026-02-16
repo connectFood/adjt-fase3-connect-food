@@ -62,6 +62,34 @@ services:
       - fase3net
     restart: unless-stopped
 
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    container_name: tc3-auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tc3
+      SPRING_DATASOURCE_USERNAME: connectfood
+      SPRING_DATASOURCE_PASSWORD: connectfood
+
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: auth
+      SPRING_FLYWAY_SCHEMAS: auth
+      SPRING_FLYWAY_DEFAULT_SCHEMA: auth
+
+      AUTH_JWT_ISSUER: connectfood-auth
+      AUTH_JWT_SECRET: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
+      AUTH_JWT_ACCESS_TOKEN_TTL_MINUTES: 15
+      AUTH_JWT_REFRESH_TOKEN_TTL_DAYS: 7
+    depends_on:
+      - postgres
+    networks:
+      - fase3net
+    restart: unless-stopped
+
 networks:
   fase3net:
 

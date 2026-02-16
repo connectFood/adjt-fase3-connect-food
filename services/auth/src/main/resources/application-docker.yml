@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ${SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA:auth}
+
+  flyway:
+    enabled: true
+    schemas: ${SPRING_FLYWAY_SCHEMAS:auth}
+    default-schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:auth}
+    locations: classpath:db/migration
+
+auth:
+  jwt:
+    issuer: ${AUTH_JWT_ISSUER:connectfood-auth}
+    secret: ${AUTH_JWT_SECRET}
+    access-token-ttl-minutes: ${AUTH_JWT_ACCESS_TOKEN_TTL_MINUTES:15}
+    refresh-token-ttl-days: ${AUTH_JWT_REFRESH_TOKEN_TTL_DAYS:7}
