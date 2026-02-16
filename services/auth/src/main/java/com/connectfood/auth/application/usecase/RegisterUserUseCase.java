@@ -10,6 +10,9 @@ import com.connectfood.auth.domain.model.User;
 import com.connectfood.auth.domain.port.RoleRepositoryPort;
 import com.connectfood.auth.domain.port.UserRepositoryPort;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class RegisterUserUseCase {
 
   private final UserRepositoryPort userRepository;
@@ -17,9 +20,9 @@ public class RegisterUserUseCase {
   private final PasswordHasher passwordHasher;
 
   public RegisterUserUseCase(
-      final UserRepositoryPort userRepository,
-      final RoleRepositoryPort roleRepository,
-      final PasswordHasher passwordHasher
+      UserRepositoryPort userRepository,
+      RoleRepositoryPort roleRepository,
+      PasswordHasher passwordHasher
   ) {
     this.userRepository = userRepository;
     this.roleRepository = roleRepository;

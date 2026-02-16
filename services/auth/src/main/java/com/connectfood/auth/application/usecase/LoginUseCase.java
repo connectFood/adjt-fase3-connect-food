@@ -13,13 +13,16 @@ import com.connectfood.auth.domain.exception.UnauthorizedException;
 import com.connectfood.auth.domain.port.RefreshTokenRepositoryPort;
 import com.connectfood.auth.domain.port.UserRepositoryPort;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+@Service
 public class LoginUseCase {
 
   private final UserRepositoryPort userRepository;
   private final PasswordHasher passwordHasher;
   private final JwtIssuer jwtIssuer;
   private final RefreshTokenRepositoryPort refreshTokenRepository;
-
   private final long refreshTokenTtlDays;
 
   public LoginUseCase(
@@ -27,7 +30,7 @@ public class LoginUseCase {
       PasswordHasher passwordHasher,
       JwtIssuer jwtIssuer,
       RefreshTokenRepositoryPort refreshTokenRepository,
-      long refreshTokenTtlDays
+      @Value("${auth.jwt.refresh-token-ttl-days}") long refreshTokenTtlDays
   ) {
     this.userRepository = userRepository;
     this.passwordHasher = passwordHasher;
@@ -54,10 +57,10 @@ public class LoginUseCase {
         .collect(Collectors.toSet());
     var pair = jwtIssuer.issue(user.uuid(), roles);
 
-    // persist refresh token (hash)
     var refreshHash = RefreshTokenHash.sha256(pair.refreshToken());
     var expiresAt = Instant.now()
         .plus(refreshTokenTtlDays, ChronoUnit.DAYS);
+
     refreshTokenRepository.save(user.uuid(), refreshHash, expiresAt);
 
     return new AuthTokensOutput(pair.accessToken(), pair.refreshToken(), pair.expiresInSeconds());

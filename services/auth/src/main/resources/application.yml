@@ -26,3 +26,10 @@ auth:
     secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
     access-token-ttl-minutes: 15
     refresh-token-ttl-days: 7
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui
+    operationsSorter: method
