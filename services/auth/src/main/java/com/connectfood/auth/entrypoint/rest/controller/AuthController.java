@@ -7,7 +7,7 @@ import com.connectfood.auth.entrypoint.rest.dto.LoginRequest;
 import com.connectfood.auth.entrypoint.rest.dto.MeResponse;
 import com.connectfood.auth.entrypoint.rest.dto.RefreshRequest;
 import com.connectfood.auth.entrypoint.rest.dto.RegisterRequest;
-import com.connectfood.auth.entrypoint.rest.dto.TokensResponse;
+import com.connectfood.auth.entrypoint.rest.dto.AuthResponse;
 import com.connectfood.auth.entrypoint.rest.mapper.AuthRestMapper;
 
 import org.springframework.http.ResponseEntity;
@@ -47,15 +47,15 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<TokensResponse> login(@Valid @RequestBody LoginRequest request) {
+  public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     var out = loginUseCase.execute(AuthRestMapper.toInput(request));
-    return ResponseEntity.ok(new TokensResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
+    return ResponseEntity.ok(new AuthResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
   }
 
   @PostMapping("/refresh")
-  public ResponseEntity<TokensResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+  public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
     var out = refreshTokenUseCase.execute(AuthRestMapper.toInput(request));
-    return ResponseEntity.ok(new TokensResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
+    return ResponseEntity.ok(new AuthResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
   }
 
   @GetMapping("/me")
