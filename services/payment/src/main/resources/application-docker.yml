@@ -1,0 +1,48 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ${SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA:payment}
+
+  flyway:
+    enabled: true
+    schemas: ${SPRING_FLYWAY_SCHEMAS:payment}
+    default-schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:payment}
+    locations: classpath:db/migration
+
+  kakfa:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    consumer:
+      group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:payment-service}
+      auto-offset-reset: earliest
+
+payment:
+  topics:
+    order-created: ${PAYMENT_TOPICS_ORDER_CREATED:pedido.criado}
+    payment-approved: ${PAYMENT_TOPICS_PAYMENT_APPROVED:pagamento.aprovado}
+    payment-pending: ${PAYMENT_TOPICS_PAYMENT_PENDING:pagamento.pendente}
+
+procpag:
+  base-url: ${PROCPAG_BASE_URL:http://procpag:8089}
+
+resilence:
+  procpag:
+    timeout-ms: ${PROCPAG_TIMEOUT_MS:1500}
+    retry:
+      max-attempts: ${PROCPAG_RETRY_MAX_ATTEMPTS:3}
+      wait-ms: ${PROCPAG_RETRY_WAIT_MS:200}
+    circuit-breaker:
+      slinding-window-size: ${PROCPAG_CB_WINDOW_SIZE:10}
+      failure-rate-threshold: ${PROCPAG_CB_FAILURE_RATE:50}
+      wait-duration-open-ms: ${PROCPAG_CB_OPEN_MS:5000}
+      permitted-calls-half-open: ${PROCPAG_CB_HALF_OPEN_CALLS:3}

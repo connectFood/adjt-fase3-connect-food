@@ -30,4 +30,4 @@ security:
 
 order:
   topics:
-    order-created: ${ORDER_TOPICS_ORDER_CREATED:order.created}
+    order-created: ${ORDER_TOPICS_ORDER_CREATED:pedido.criado}

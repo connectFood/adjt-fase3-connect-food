@@ -1,0 +1,48 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tc3
+    username: connectfood
+    password: connectfood
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: payment
+
+  flyway:
+    enabled: true
+    schemas: payment
+    default-schema: payment
+    locations: classpath:db/migration
+
+  kakfa:
+    bootstrap-servers: localhost:9094
+    consumer:
+      group-id: payment-service
+      auto-offset-reset: earliest
+
+payment:
+  topics:
+    order-created: pedido.criado
+    payment-approved: pagamento.aprovado
+    payment-pending: pagamento.pendente
+
+procpag:
+  base-url: http://localhost:8089
+
+resilence:
+  procpag:
+    timeout-ms: 1500
+    retry:
+      max-attempts: 3
+      wait-ms: 200
+    circuit-breaker:
+      slinding-window-size: 10
+      failure-rate-threshold: 50
+      wait-duration-open-ms: 5000
+      permitted-calls-half-open: 3

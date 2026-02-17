@@ -35,4 +35,4 @@ security:
 
 order:
   topics:
-    order-created: order.created
+    order-created: pedido.criado
