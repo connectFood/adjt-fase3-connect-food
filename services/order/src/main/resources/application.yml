@@ -1,0 +1,38 @@
+server:
+  port: 8082
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tc3
+    username: connectfood
+    password: connectfood
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: order
+
+  flyway:
+    enabled: true
+    schemas: order
+    default-schema: order
+    locations: classpath:db/migration
+
+  kafka:
+    admin:
+      auto-create: true
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+security:
+  jwt:
+    issuer: connectfood-auth
+    secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
+
+order:
+  topics:
+    order-created: order.created
