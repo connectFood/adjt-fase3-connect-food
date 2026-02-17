@@ -33,7 +33,6 @@ HELP.md
 **/*credential*
 **/*key*
 **/*private*
-**/*token*
 
 ############################################
 # Docker / Compose
