@@ -20,11 +20,14 @@ spring:
     default-schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:payment}
     locations: classpath:db/migration
 
-  kakfa:
+  kafka:
     bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
     consumer:
       group-id: ${SPRING_KAFKA_CONSUMER_GROUP_ID:payment-service}
       auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 payment:
   topics:
@@ -35,14 +38,14 @@ payment:
 procpag:
   base-url: ${PROCPAG_BASE_URL:http://procpag:8089}
 
-resilence:
+resilience:
   procpag:
     timeout-ms: ${PROCPAG_TIMEOUT_MS:1500}
     retry:
       max-attempts: ${PROCPAG_RETRY_MAX_ATTEMPTS:3}
       wait-ms: ${PROCPAG_RETRY_WAIT_MS:200}
     circuit-breaker:
-      slinding-window-size: ${PROCPAG_CB_WINDOW_SIZE:10}
+      sliding-window-size: ${PROCPAG_CB_WINDOW_SIZE:10}
       failure-rate-threshold: ${PROCPAG_CB_FAILURE_RATE:50}
       wait-duration-open-ms: ${PROCPAG_CB_OPEN_MS:5000}
       permitted-calls-half-open: ${PROCPAG_CB_HALF_OPEN_CALLS:3}

@@ -20,11 +20,14 @@ spring:
     default-schema: payment
     locations: classpath:db/migration
 
-  kakfa:
+  kafka:
     bootstrap-servers: localhost:9094
     consumer:
       group-id: payment-service
       auto-offset-reset: earliest
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 payment:
   topics:
@@ -35,14 +38,14 @@ payment:
 procpag:
   base-url: http://localhost:8089
 
-resilence:
+resilience:
   procpag:
     timeout-ms: 1500
     retry:
       max-attempts: 3
       wait-ms: 200
     circuit-breaker:
-      slinding-window-size: 10
+      sliding-window-size: 10
       failure-rate-threshold: 50
       wait-duration-open-ms: 5000
       permitted-calls-half-open: 3
