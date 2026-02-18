@@ -39,7 +39,6 @@ public class RegisterUserUseCase {
 
     var user = new User(
         null,
-        null,
         input.email(),
         passwordHasher.hash(input.password()),
         true,

@@ -1,6 +1,5 @@
 package com.connectfood.auth.infrastructure.persistence;
 
-import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -21,48 +20,36 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
   private final JpaUserRepository users;
   private final JpaRoleRepository roles;
 
-  public UserRepositoryAdapter(JpaUserRepository users, JpaRoleRepository roles) {
+  public UserRepositoryAdapter(final JpaUserRepository users, final JpaRoleRepository roles) {
     this.users = users;
     this.roles = roles;
   }
 
   @Override
-  public Optional<User> findByEmail(String email) {
+  public Optional<User> findByEmail(final String email) {
     return users.findByEmail(email)
         .map(UserInfraMapper::toDomain);
   }
 
   @Override
-  public Optional<User> findByUuid(UUID uuid) {
+  public Optional<User> findByUuid(final UUID uuid) {
     return users.findByUuid(uuid)
         .map(UserInfraMapper::toDomain);
   }
 
   @Override
-  public boolean existsByEmail(String email) {
+  public boolean existsByEmail(final String email) {
     return users.existsByEmail(email);
   }
 
   @Override
   @Transactional
-  public User save(User user) {
-    var now = OffsetDateTime.now();
-
-    UserEntity entity;
-    if (user.id() != null) {
-      entity = users.findById(user.id())
-          .orElseThrow();
-    } else {
-      entity = new UserEntity();
-      entity.setUuid(UUID.randomUUID());
-      entity.setCreatedAt(now);
-      entity.setEnabled(true);
-    }
-
+  public User save(final User user) {
+    UserEntity entity = new UserEntity();
+    entity.setEnabled(true);
     entity.setEmail(user.email());
     entity.setPasswordHash(user.passwordHash());
     entity.setEnabled(user.enabled());
-    entity.setUpdatedAt(now);
 
     var roleEntities = user.roles()
         .stream()

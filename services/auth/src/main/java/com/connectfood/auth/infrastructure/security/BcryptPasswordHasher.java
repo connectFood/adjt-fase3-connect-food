@@ -11,12 +11,12 @@ public class BcryptPasswordHasher implements PasswordHasher {
   private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
   @Override
-  public String hash(String raw) {
+  public String hash(final String raw) {
     return encoder.encode(raw);
   }
 
   @Override
-  public boolean matches(String raw, String hashed) {
+  public boolean matches(final String raw, final String hashed) {
     return encoder.matches(raw, hashed);
   }
 }

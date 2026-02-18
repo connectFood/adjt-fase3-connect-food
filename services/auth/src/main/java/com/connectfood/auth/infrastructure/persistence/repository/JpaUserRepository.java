@@ -1,16 +1,12 @@
 package com.connectfood.auth.infrastructure.persistence.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import com.connectfood.auth.infrastructure.persistence.entity.UserEntity;
+import com.connectfood.auth.infrastructure.persistence.repository.common.BaseJpaRepository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
-public interface JpaUserRepository extends JpaRepository<UserEntity, Long> {
+public interface JpaUserRepository extends BaseJpaRepository<UserEntity> {
   Optional<UserEntity> findByEmail(String email);
-
-  Optional<UserEntity> findByUuid(UUID uuid);
 
   boolean existsByEmail(String email);
 }

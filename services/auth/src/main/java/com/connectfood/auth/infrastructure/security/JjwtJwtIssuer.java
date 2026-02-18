@@ -23,9 +23,9 @@ public class JjwtJwtIssuer implements JwtIssuer {
   private final long accessTtlMinutes;
 
   public JjwtJwtIssuer(
-      @Value("${auth.jwt.issuer}") String issuer,
-      @Value("${auth.jwt.secret}") String secret,
-      @Value("${auth.jwt.access-token-ttl-minutes}") long accessTtlMinutes
+      @Value("${auth.jwt.issuer}") final String issuer,
+      @Value("${auth.jwt.secret}") final String secret,
+      @Value("${auth.jwt.access-token-ttl-minutes}") final long accessTtlMinutes
   ) {
     this.issuer = issuer;
     this.secret = secret;
@@ -33,7 +33,7 @@ public class JjwtJwtIssuer implements JwtIssuer {
   }
 
   @Override
-  public JwtPair issue(UUID userUuid, Set<String> roles) {
+  public JwtPair issue(final UUID userUuid, final Set<String> roles) {
     var now = Instant.now();
     var exp = now.plus(accessTtlMinutes, ChronoUnit.MINUTES);
 

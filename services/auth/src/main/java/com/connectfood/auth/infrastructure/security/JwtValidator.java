@@ -25,7 +25,7 @@ public class JwtValidator {
     this.secret = secret;
   }
 
-  public JwtPrincipal validateAndExtract(String token) {
+  public JwtPrincipal validateAndExtract(final String token) {
     var key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 
     Claims claims = Jwts.parser()

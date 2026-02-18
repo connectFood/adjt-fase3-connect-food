@@ -14,7 +14,7 @@ public class RoleRepositoryAdapter implements RoleRepositoryPort {
 
   private final JpaRoleRepository jpa;
 
-  public RoleRepositoryAdapter(JpaRoleRepository jpa) {
+  public RoleRepositoryAdapter(final JpaRoleRepository jpa) {
     this.jpa = jpa;
   }
 
@@ -22,10 +22,5 @@ public class RoleRepositoryAdapter implements RoleRepositoryPort {
   public Optional<Role> findByName(String name) {
     return jpa.findByName(name)
         .map(RoleInfraMapper::toDomain);
-  }
-
-  @Override
-  public Role save(Role role) {
-    throw new UnsupportedOperationException("Role creation can be added later if needed.");
   }
 }

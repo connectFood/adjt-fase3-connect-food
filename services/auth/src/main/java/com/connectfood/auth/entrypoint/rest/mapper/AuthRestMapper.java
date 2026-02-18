@@ -8,6 +8,7 @@ import com.connectfood.auth.entrypoint.rest.dto.RefreshRequest;
 import com.connectfood.auth.entrypoint.rest.dto.RegisterRequest;
 
 public final class AuthRestMapper {
+
   private AuthRestMapper() {
   }
 

@@ -1,21 +1,17 @@
 package com.connectfood.auth.infrastructure.persistence.entity;
 
-import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
+
+import com.connectfood.auth.infrastructure.persistence.entity.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import jakarta.persistence.Version;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,33 +19,16 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users", schema = "auth")
-public class UserEntity {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+public class UserEntity extends BaseEntity {
 
   @Column(nullable = false, unique = true)
-  private UUID uuid;
-
-  @Column(nullable = false, unique = true, length = 255)
   private String email;
 
-  @Column(name = "password_hash", nullable = false, length = 255)
+  @Column(name = "password_hash", nullable = false)
   private String passwordHash;
 
   @Column(nullable = false)
   private boolean enabled;
-
-  @Column(name = "created_at", nullable = false)
-  private OffsetDateTime createdAt;
-
-  @Column(name = "updated_at", nullable = false)
-  private OffsetDateTime updatedAt;
-
-  @Version
-  @Column(nullable = false)
-  private Long version;
 
   @ManyToMany(fetch = FetchType.EAGER)
   @JoinTable(
