@@ -10,12 +10,16 @@ import com.connectfood.auth.application.security.JwtIssuer;
 import com.connectfood.auth.application.security.PasswordHasher;
 import com.connectfood.auth.application.security.RefreshTokenHash;
 import com.connectfood.auth.domain.exception.UnauthorizedException;
+import com.connectfood.auth.domain.model.Role;
 import com.connectfood.auth.domain.port.RefreshTokenRepositoryPort;
 import com.connectfood.auth.domain.port.UserRepositoryPort;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class LoginUseCase {
 
@@ -26,11 +30,11 @@ public class LoginUseCase {
   private final long refreshTokenTtlDays;
 
   public LoginUseCase(
-      UserRepositoryPort userRepository,
-      PasswordHasher passwordHasher,
-      JwtIssuer jwtIssuer,
-      RefreshTokenRepositoryPort refreshTokenRepository,
-      @Value("${auth.jwt.refresh-token-ttl-days}") long refreshTokenTtlDays
+      final UserRepositoryPort userRepository,
+      final PasswordHasher passwordHasher,
+      final JwtIssuer jwtIssuer,
+      final RefreshTokenRepositoryPort refreshTokenRepository,
+      @Value("${auth.jwt.refresh-token-ttl-days}") final long refreshTokenTtlDays
   ) {
     this.userRepository = userRepository;
     this.passwordHasher = passwordHasher;
@@ -39,22 +43,26 @@ public class LoginUseCase {
     this.refreshTokenTtlDays = refreshTokenTtlDays;
   }
 
-  public AuthTokensOutput execute(LoginInput input) {
+  public AuthTokensOutput execute(final LoginInput input) {
+    log.info("I=Iniciando login, email={}", input.email());
     var user = userRepository.findByEmail(input.email())
-        .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
+        .orElseThrow(() -> new UnauthorizedException("Credenciais inválidas"));
 
     if (!user.enabled()) {
-      throw new UnauthorizedException("User disabled");
+      log.error("E=Usuario desabilitado, email={}", input.email());
+      throw new UnauthorizedException("Usuário desabilitado");
     }
 
     if (!passwordHasher.matches(input.password(), user.passwordHash())) {
-      throw new UnauthorizedException("Invalid credentials");
+      log.error("E=Credenciais invalidas, email={}", input.email());
+      throw new UnauthorizedException("Credenciais inválidas");
     }
 
     var roles = user.roles()
         .stream()
-        .map(r -> r.name())
+        .map(Role::name)
         .collect(Collectors.toSet());
+
     var pair = jwtIssuer.issue(user.uuid(), roles);
 
     var refreshHash = RefreshTokenHash.sha256(pair.refreshToken());
@@ -63,6 +71,9 @@ public class LoginUseCase {
 
     refreshTokenRepository.save(user.uuid(), refreshHash, expiresAt);
 
-    return new AuthTokensOutput(pair.accessToken(), pair.refreshToken(), pair.expiresInSeconds());
+    final var token = new AuthTokensOutput(pair.accessToken(), pair.refreshToken(), pair.expiresInSeconds());
+
+    log.info("I=Login realizado com sucesso, email={}", input.email());
+    return token;
   }
 }
