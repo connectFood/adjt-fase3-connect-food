@@ -1,13 +1,11 @@
 package com.connectfood.auth.entrypoint.rest.controller;
 
 import com.connectfood.auth.application.usecase.LoginUseCase;
-import com.connectfood.auth.application.usecase.RefreshTokenUseCase;
 import com.connectfood.auth.application.usecase.RegisterUserUseCase;
+import com.connectfood.auth.entrypoint.rest.dto.AuthResponse;
 import com.connectfood.auth.entrypoint.rest.dto.LoginRequest;
 import com.connectfood.auth.entrypoint.rest.dto.MeResponse;
-import com.connectfood.auth.entrypoint.rest.dto.RefreshRequest;
 import com.connectfood.auth.entrypoint.rest.dto.RegisterRequest;
-import com.connectfood.auth.entrypoint.rest.dto.AuthResponse;
 import com.connectfood.auth.entrypoint.rest.mapper.AuthRestMapper;
 
 import org.springframework.http.ResponseEntity;
@@ -27,16 +25,13 @@ public class AuthController {
 
   private final RegisterUserUseCase registerUserUseCase;
   private final LoginUseCase loginUseCase;
-  private final RefreshTokenUseCase refreshTokenUseCase;
 
   public AuthController(
       RegisterUserUseCase registerUserUseCase,
-      LoginUseCase loginUseCase,
-      RefreshTokenUseCase refreshTokenUseCase
+      LoginUseCase loginUseCase
   ) {
     this.registerUserUseCase = registerUserUseCase;
     this.loginUseCase = loginUseCase;
-    this.refreshTokenUseCase = refreshTokenUseCase;
   }
 
   @PostMapping("/register")
@@ -49,13 +44,7 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
     var out = loginUseCase.execute(AuthRestMapper.toInput(request));
-    return ResponseEntity.ok(new AuthResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
-  }
-
-  @PostMapping("/refresh")
-  public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
-    var out = refreshTokenUseCase.execute(AuthRestMapper.toInput(request));
-    return ResponseEntity.ok(new AuthResponse(out.accessToken(), out.refreshToken(), out.expiresInSeconds()));
+    return ResponseEntity.ok(new AuthResponse(out.accessToken(), out.expiresInSeconds()));
   }
 
   @GetMapping("/me")

@@ -2,6 +2,10 @@ server:
   port: 8081
 
 spring:
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
     url: jdbc:postgresql://localhost:5432/tc3
     username: connectfood
@@ -23,9 +27,9 @@ spring:
 auth:
   jwt:
     issuer: connectfood-auth
+    audience: connectfood
     secret: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
     access-token-ttl-minutes: 15
-    refresh-token-ttl-days: 7
 
 springdoc:
   api-docs:

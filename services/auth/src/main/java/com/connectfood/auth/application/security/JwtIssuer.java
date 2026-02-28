@@ -3,9 +3,8 @@ package com.connectfood.auth.application.security;
 import java.util.Set;
 import java.util.UUID;
 
-public interface JwtIssuer {
-  JwtPair issue(UUID userUuid, Set<String> roles);
+import com.connectfood.auth.application.security.dto.JwtPair;
 
-  record JwtPair(String accessToken, String refreshToken, long expiresInSeconds) {
-  }
+public interface JwtIssuer {
+  JwtPair issue(UUID userUuid, String email, Set<String> roles);
 }

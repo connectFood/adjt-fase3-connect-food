@@ -18,6 +18,7 @@ public final class UserInfraMapper {
 
     return new User(
         entity.getUuid(),
+        entity.getFullName(),
         entity.getEmail(),
         entity.getPasswordHash(),
         entity.isEnabled(),

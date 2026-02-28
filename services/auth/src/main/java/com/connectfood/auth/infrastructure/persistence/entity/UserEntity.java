@@ -21,6 +21,9 @@ import lombok.Setter;
 @Table(name = "users", schema = "auth")
 public class UserEntity extends BaseEntity {
 
+  @Column(name = "full_name", nullable = false)
+  private String fullName;
+
   @Column(nullable = false, unique = true)
   private String email;
 
