@@ -56,7 +56,6 @@ public class RegisterUserUseCase {
   private User mapUser(final RegisterUserInput input, final Role role) {
     return new User(
         null,
-        input.fullName(),
         input.email(),
         passwordHasher.hash(input.password()),
         true,
