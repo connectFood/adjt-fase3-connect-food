@@ -16,4 +16,12 @@ public class KafkaTopicsConfig {
         .replicas(1)
         .build();
   }
+
+  @Bean
+  public NewTopic paymentApprovedTopic(@Value("${order.topics.payment-approved}") String topicName) {
+    return TopicBuilder.name(topicName)
+        .partitions(1)
+        .replicas(1)
+        .build();
+  }
 }

@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.connectfood.order.domain.model.Order;
+import com.connectfood.order.domain.model.OrderStatus;
 import com.connectfood.order.domain.port.OrderRepositoryPort;
 import com.connectfood.order.infrastructure.persistence.mapper.OrderInfraMapper;
 import com.connectfood.order.infrastructure.persistence.repository.JpaOrderRepository;
@@ -40,5 +41,11 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
         .stream()
         .map(OrderInfraMapper::toDomain)
         .toList();
+  }
+
+  @Override
+  @Transactional
+  public boolean updateStatusByUuid(UUID orderUuid, OrderStatus status) {
+    return jpa.updateStatusByUuid(orderUuid, status.name()) > 0;
   }
 }

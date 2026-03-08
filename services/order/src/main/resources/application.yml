@@ -24,6 +24,9 @@ spring:
     admin:
       auto-create: true
     bootstrap-servers: localhost:9094
+    consumer:
+      group-id: order-service
+      auto-offset-reset: earliest
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -36,3 +39,4 @@ security:
 order:
   topics:
     order-created: pedido.criado
+    payment-approved: pagamento.aprovado

@@ -1,6 +1,7 @@
 package com.connectfood.order.domain.port;
 
 import com.connectfood.order.domain.model.Order;
+import com.connectfood.order.domain.model.OrderStatus;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,4 +13,6 @@ public interface OrderRepositoryPort {
   Optional<Order> findByUuid(UUID uuid);
 
   List<Order> findByCustomerUuid(UUID customerUuid);
+
+  boolean updateStatusByUuid(UUID orderUuid, OrderStatus status);
 }
