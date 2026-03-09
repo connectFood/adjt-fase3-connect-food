@@ -24,7 +24,7 @@ public class ReprocessPendingPaymentUseCase {
     this.paymentOrchestrator = paymentOrchestrator;
   }
 
-  public void execute(PendingPaymentCommand command) {
+  public PaymentStatus execute(PendingPaymentCommand command) {
     log.info("I=Use case de reprocessamento iniciado para pedido {}", command.orderUuid());
     var transaction = repository.findByOrderUuid(command.orderUuid())
         .orElseGet(() -> repository.save(PaymentTransaction.newPending(
@@ -36,10 +36,11 @@ public class ReprocessPendingPaymentUseCase {
 
     if (transaction.status() == PaymentStatus.APPROVED) {
       log.warn("W=Pedido {} ja possui pagamento aprovado. Reprocessamento ignorado", command.orderUuid());
-      return;
+      return PaymentStatus.APPROVED;
     }
 
-    paymentOrchestrator.processPayment(transaction.withStatus(PaymentStatus.PENDING));
+    var status = paymentOrchestrator.processPayment(transaction.withStatus(PaymentStatus.PENDING), false);
     log.info("I=Use case de reprocessamento finalizado para pedido {}", command.orderUuid());
+    return status;
   }
 }

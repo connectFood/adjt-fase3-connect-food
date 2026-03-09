@@ -34,6 +34,12 @@ payment:
     order-created: pedido.criado
     payment-approved: pagamento.aprovado
     payment-pending: pagamento.pendente
+    payment-pending-dlt: pagamento.pendente-dlt
+  pending-retry:
+    attempts: 4
+    delay-ms: 10000
+    multiplier: 2.0
+    max-delay-ms: 120000
 
 procpag:
   base-url: http://localhost:8089

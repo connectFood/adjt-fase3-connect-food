@@ -3,7 +3,9 @@ package com.connectfood.payment;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.kafka.annotation.EnableKafkaRetryTopic;
 
+@EnableKafkaRetryTopic
 @EnableFeignClients(basePackages = "com.connectfood.payment")
 @SpringBootApplication
 public class PaymentApplication {

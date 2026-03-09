@@ -34,6 +34,12 @@ payment:
     order-created: ${PAYMENT_TOPICS_ORDER_CREATED:pedido.criado}
     payment-approved: ${PAYMENT_TOPICS_PAYMENT_APPROVED:pagamento.aprovado}
     payment-pending: ${PAYMENT_TOPICS_PAYMENT_PENDING:pagamento.pendente}
+    payment-pending-dlt: ${PAYMENT_TOPICS_PAYMENT_PENDING_DLT:pagamento.pendente-dlt}
+  pending-retry:
+    attempts: ${PAYMENT_PENDING_RETRY_ATTEMPTS:4}
+    delay-ms: ${PAYMENT_PENDING_RETRY_DELAY_MS:10000}
+    multiplier: ${PAYMENT_PENDING_RETRY_MULTIPLIER:2.0}
+    max-delay-ms: ${PAYMENT_PENDING_RETRY_MAX_DELAY_MS:120000}
 
 procpag:
   base-url: ${PROCPAG_BASE_URL:http://procpag:8089}

@@ -34,7 +34,7 @@ public class PaymentOrchestratorService {
     this.resilienceExecutor = resilienceExecutor;
   }
 
-  public void processPayment(PaymentTransaction paymentTransaction) {
+  public PaymentStatus processPayment(PaymentTransaction paymentTransaction, boolean publishPendingEvent) {
     log.info("I=Orquestracao de pagamento iniciada para pedido {}", paymentTransaction.orderUuid());
     try {
       var result = resilienceExecutor.execute(
@@ -48,19 +48,32 @@ public class PaymentOrchestratorService {
       if (result.approved()) {
         log.info("I=Pagamento aprovado pela Procpag para pedido {}", paymentTransaction.orderUuid());
         publishApproved(repository.save(paymentTransaction.withStatus(PaymentStatus.APPROVED)));
-        return;
+        return PaymentStatus.APPROVED;
       }
 
       log.warn("W=Pagamento nao aprovado para pedido {}. Motivo={}", paymentTransaction.orderUuid(), result.reason());
-      publishPending(
-          repository.save(paymentTransaction.withStatus(PaymentStatus.PENDING)),
-          result.reason() == null ? "NOT_APPROVED" : result.reason()
-      );
+      var pendingTransaction = repository.save(paymentTransaction.withStatus(PaymentStatus.PENDING));
+      if (publishPendingEvent) {
+        publishPending(
+            pendingTransaction,
+            result.reason() == null ? "NOT_APPROVED" : result.reason()
+        );
+      } else {
+        log.warn("W=Pagamento permaneceu pendente para pedido {} sem republicacao de evento", paymentTransaction.orderUuid());
+      }
+      return PaymentStatus.PENDING;
     } catch (Exception ex) {
       log.error("E=Falha ao processar pagamento para pedido {}", paymentTransaction.orderUuid(), ex);
-      publishPending(repository.save(paymentTransaction.withStatus(PaymentStatus.PENDING)), DEFAULT_UNAVAILABLE_REASON);
+      var pendingTransaction = repository.save(paymentTransaction.withStatus(PaymentStatus.PENDING));
+      if (publishPendingEvent) {
+        publishPending(pendingTransaction, DEFAULT_UNAVAILABLE_REASON);
+      } else {
+        log.warn("W=Pagamento permaneceu pendente para pedido {} apos erro sem republicacao de evento", paymentTransaction.orderUuid());
+      }
+      return PaymentStatus.PENDING;
+    } finally {
+      log.info("I=Orquestracao de pagamento finalizada para pedido {}", paymentTransaction.orderUuid());
     }
-    log.info("I=Orquestracao de pagamento finalizada para pedido {}", paymentTransaction.orderUuid());
   }
 
   private void publishApproved(PaymentTransaction transaction) {

@@ -1,0 +1,155 @@
+REFERENCIA_Codex_Payment_Service
+
+Data de consolidacao: 2026-03-09
+Servico: payment-service
+Projeto: ConnectFood TC-3
+
+1) Objetivo da refatoracao
+- Reorganizar o servico de payment seguindo arquitetura hexagonal (domain, application, infrastructure).
+- Atender requisitos do tech challenge:
+  - Consumir pedido.criado.
+  - Processar pagamento via Procpag (api de risco externa).
+  - Publicar pagamento.aprovado ou pagamento.pendente.
+  - Garantir resiliencia com timeout, retry e circuit breaker.
+  - Reprocessar pagamentos pendentes.
+
+2) Principais alteracoes estruturais
+2.1 Camada application
+- Novos comandos:
+  - application/command/OrderPaymentCommand.java
+  - application/command/PendingPaymentCommand.java
+- Novos casos de uso:
+  - application/usecase/ProcessPaymentOnOrderCreatedUseCase.java
+  - application/usecase/ReprocessPendingPaymentUseCase.java
+- Novos servicos de orquestracao/resiliencia:
+  - application/service/PaymentOrchestratorService.java
+  - application/service/PaymentResilienceExecutor.java
+
+2.2 Camada domain
+- Eventos movidos para domain:
+  - domain/event/PaymentApprovedEvent.java
+  - domain/event/PaymentPendingEvent.java
+- Porta de eventos desacoplada de infrastructure:
+  - domain/port/PaymentEventPublisherPort.java
+- Evolucao do modelo de transacao:
+  - domain/model/PaymentTransaction.java
+    - metodo estatico newPending(...)
+    - metodo withStatus(...)
+- Evolucao da porta do processador:
+  - domain/port/PaymentProcessorPort.java
+    - PaymentProcessorResult(boolean approved, String reason)
+    - metodos utilitarios approvedResult() e pendingResult(...)
+
+2.3 Camada infrastructure
+- HTTP adapter Procpag:
+  - infrastructure/http/ProcpagPaymentProcessorAdapter.java
+  - infrastructure/http/dto/ProcpagResponse.java
+- Mensageria Kafka:
+  - infrastructure/messaging/OrderCreatedConsumer.java
+  - infrastructure/messaging/PaymentPendingWorker.java
+  - infrastructure/messaging/KafkaPaymentEventPublisher.java
+- Persistencia:
+  - infrastructure/persistence/PaymentTransactionRepositoryAdapter.java
+  - infrastructure/persistence/mapper/PaymentInfraMapper.java
+- Configuracao:
+  - PaymentApplication.java (habilitado retry topic Kafka)
+  - infrastructure/config/KafkaTopicsConfig.java
+- Eventos removidos de infrastructure (duplicados):
+  - infrastructure/messaging/events/PaymentApprovedEvent.java
+  - infrastructure/messaging/events/PaymentPendingEvent.java
+
+3) Fluxo funcional implementado
+3.1 Fluxo principal (pedido.criado)
+1. OrderCreatedConsumer consome evento pedido.criado.
+2. ProcessPaymentOnOrderCreatedUseCase aplica idempotencia por orderUuid.
+3. Cria transacao PENDING quando necessario.
+4. PaymentOrchestratorService executa tentativa de pagamento com resiliencia.
+5. Se aprovado:
+   - atualiza status para APPROVED
+   - publica pagamento.aprovado
+6. Se falhar/timeout/indisponibilidade:
+   - mantem status PENDING
+   - publica pagamento.pendente (apenas no fluxo inicial)
+
+3.2 Fluxo de reprocessamento (pagamento.pendente)
+1. PaymentPendingWorker consome pagamento.pendente.
+2. ReprocessPendingPaymentUseCase tenta pagamento novamente.
+3. Se aprovado:
+   - atualiza para APPROVED
+   - publica pagamento.aprovado
+4. Se continuar pendente:
+   - atualiza no banco
+   - NAO republica manualmente pagamento.pendente
+   - lanca excecao para retry topic
+
+4) Resiliencia aplicada (Procpag)
+- Componente: PaymentResilienceExecutor
+- Estrategias:
+  - TimeLimiter
+  - Retry
+  - CircuitBreaker
+- Parametros lidos de configuracao:
+  - resilience.procpag.timeout-ms
+  - resilience.procpag.retry.max-attempts
+  - resilience.procpag.retry.wait-ms
+  - resilience.procpag.circuit-breaker.*
+
+5) Ajuste de problema de loop de mensagens
+Problema observado:
+- Reprocessamento publicava novas mensagens pendentes a cada falha, inflando o topico.
+
+Correcao aplicada:
+- No reprocessamento, nao ha republicacao manual de pagamento.pendente.
+- Reentrega futura passou a ser feita por retry topics do Spring Kafka.
+
+6) Retry topic + DLT para pendencias
+- Implementado em PaymentPendingWorker com @RetryableTopic + @DltHandler.
+- Comportamento:
+  - quando pagamento continua pendente, listener lanca excecao;
+  - mensagem vai para topicos de retry com backoff;
+  - apos esgotar tentativas, vai para DLT.
+
+Configuracoes adicionadas:
+- payment.pending-retry.attempts
+- payment.pending-retry.delay-ms
+- payment.pending-retry.multiplier
+- payment.pending-retry.max-delay-ms
+- payment.topics.payment-pending-dlt
+
+Arquivos de config alterados:
+- src/main/resources/application.yml
+- src/main/resources/application-docker.yml
+
+7) Padronizacao de logs
+Solicitacao atendida:
+- Usar @Slf4j
+- Mensagens em portugues
+- Padrao:
+  - log.info("I=...")
+  - log.warn("W=...")
+  - log.error("E=...")
+
+Pontos cobertos:
+- Consumo de eventos (pedido.criado / pagamento.pendente)
+- Publicacao de eventos Kafka
+- Orquestracao de pagamento
+- Use cases de processamento e reprocessamento
+- Chamada HTTP para Procpag
+
+8) Status de build
+Comandos executados durante o trabalho:
+- .\\mvnw.cmd -DskipTests compile -> BUILD SUCCESS
+- .\\mvnw.cmd test -> BUILD SUCCESS (no tests to run)
+
+9) Observacoes importantes para proximos chats
+- O comportamento atual de retry de pendencias depende de Spring Kafka retry topics.
+- O worker so confirma processamento com sucesso quando status final for APPROVED.
+- Mensagens que esgotarem tentativas vao para DLT e exigem estrategia operacional (monitorar e reprocessar manualmente ou via job especifico).
+- Ha arquivos em doc com status modificado no git desde o inicio da sessao (tech.md e referencia_procpag.txt).
+
+10) Sugestoes de proximo passo
+- Criar testes automatizados para:
+  - fluxo aprovado na primeira tentativa;
+  - fluxo pendente com fallback;
+  - reprocessamento com retry topic e envio para DLT.
+- Definir processo de reprocessamento de DLT (manual/automatizado).

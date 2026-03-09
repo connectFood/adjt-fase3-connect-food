@@ -45,7 +45,7 @@ public class ProcessPaymentOnOrderCreatedUseCase {
       log.info("I=Transacao de pagamento criada com status pendente para pedido {}", command.orderUuid());
     }
 
-    paymentOrchestrator.processPayment(transaction);
+    paymentOrchestrator.processPayment(transaction, true);
     log.info("I=Use case de pagamento finalizado para pedido {}", command.orderUuid());
   }
 }
