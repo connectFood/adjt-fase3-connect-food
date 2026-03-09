@@ -3,11 +3,12 @@ package com.connectfood.order.infrastructure.messaging;
 import com.connectfood.order.domain.model.Order;
 import com.connectfood.order.domain.port.OrderEventPublisherPort;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class KafkaOrderEventPublisher implements OrderEventPublisherPort {
 
@@ -27,8 +28,8 @@ public class KafkaOrderEventPublisher implements OrderEventPublisherPort {
 
   @Override
   public void publishOrderCreated(Order order) {
+    log.info("I=Iniciando publicação de evento de pedido criado orderUuid={} topico={}", order.uuid(), orderCreatedTopic);
     try {
-
       var event = new OrderCreatedEvent(
           order.uuid(),
           order.customerUuid(),
@@ -47,14 +48,14 @@ public class KafkaOrderEventPublisher implements OrderEventPublisherPort {
 
       var json = objectMapper.writeValueAsString(event);
 
-      // key = orderUuid → garante ordenação por pedido
+      // key = orderUuid para garantir ordenacao por pedido
       kafka.send(orderCreatedTopic, order.uuid()
           .toString(), json
       );
-
+      log.info("I=Evento de pedido criado publicado com sucesso orderUuid={} topico={}", order.uuid(), orderCreatedTopic);
     } catch (Exception e) {
-      // Para TC-3: não derrubar serviço por falha de publish
-      // Ideal: logar o erro
+      // Para TC-3: nao derrubar servico por falha de publish
+      log.error("E=Erro ao publicar evento de pedido criado orderUuid={} topico={}", order.uuid(), orderCreatedTopic, e);
     }
   }
 }

@@ -6,8 +6,10 @@ import com.connectfood.order.domain.port.OrderRepositoryPort;
 import java.util.List;
 import java.util.UUID;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ListOrdersByCustomerUseCase {
 
@@ -18,7 +20,8 @@ public class ListOrdersByCustomerUseCase {
   }
 
   public List<OrderOutput> execute(UUID customerUuid) {
-    return repository.findByCustomerUuid(customerUuid)
+    log.info("I=Listando pedidos do cliente customerUuid={}", customerUuid);
+    var orders = repository.findByCustomerUuid(customerUuid)
         .stream()
         .map(o -> new OrderOutput(
             o.uuid(),
@@ -32,5 +35,7 @@ public class ListOrdersByCustomerUseCase {
                 .toList()
         ))
         .toList();
+    log.info("I=Listagem de pedidos concluída customerUuid={} quantidade={}", customerUuid, orders.size());
+    return orders;
   }
 }

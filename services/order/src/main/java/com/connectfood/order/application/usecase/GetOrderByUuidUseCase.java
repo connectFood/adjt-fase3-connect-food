@@ -7,8 +7,10 @@ import com.connectfood.order.domain.exception.NotFoundException;
 import com.connectfood.order.domain.model.Order;
 import com.connectfood.order.domain.port.OrderRepositoryPort;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class GetOrderByUuidUseCase {
 
@@ -19,9 +21,14 @@ public class GetOrderByUuidUseCase {
   }
 
   public OrderOutput execute(UUID orderUuid) {
+    log.info("I=Consultando pedido por uuid={}", orderUuid);
     var order = repository.findByUuid(orderUuid)
-        .orElseThrow(() -> new NotFoundException("Order not found"));
+        .orElseThrow(() -> {
+          log.warn("W=Pedido não encontrado para uuid={}", orderUuid);
+          return new NotFoundException("Order not found");
+        });
 
+    log.info("I=Pedido encontrado com sucesso uuid={} status={}", order.uuid(), order.status());
     return toOutput(order);
   }
 

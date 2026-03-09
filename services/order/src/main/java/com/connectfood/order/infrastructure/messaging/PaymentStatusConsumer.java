@@ -4,9 +4,11 @@ import com.connectfood.order.application.usecase.UpdateOrderStatusUseCase;
 import com.connectfood.order.domain.model.OrderStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class PaymentStatusConsumer {
 
@@ -20,10 +22,19 @@ public class PaymentStatusConsumer {
 
   @KafkaListener(topics = "${order.topics.payment-approved:pagamento.aprovado}", groupId = "${spring.kafka.consumer.group-id:order-service}")
   public void onPaymentApproved(String payload) {
+    log.info("I=Mensagem de pagamento aprovado recebida");
     try {
       var event = mapper.readValue(payload, PaymentApprovedEvent.class);
-      updateOrderStatusUseCase.execute(event.orderUuid(), OrderStatus.PAID);
-    } catch (Exception ignored) {
+      var updated = updateOrderStatusUseCase.execute(event.orderUuid(), OrderStatus.PAID);
+      if (updated) {
+        log.info("I=Processamento de pagamento aprovado concluído orderUuid={} status={}", event.orderUuid(),
+            OrderStatus.PAID
+        );
+      } else {
+        log.warn("W=Pagamento aprovado recebido, mas pedido não encontrado orderUuid={}", event.orderUuid());
+      }
+    } catch (Exception e) {
+      log.error("E=Erro ao processar mensagem de pagamento aprovado", e);
     }
   }
 }

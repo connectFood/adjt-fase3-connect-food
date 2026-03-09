@@ -14,8 +14,10 @@ import com.connectfood.order.domain.model.OrderStatus;
 import com.connectfood.order.domain.port.OrderEventPublisherPort;
 import com.connectfood.order.domain.port.OrderRepositoryPort;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class CreateOrderUseCase {
 
@@ -28,8 +30,10 @@ public class CreateOrderUseCase {
   }
 
   public OrderOutput execute(UUID customerUuid, CreateOrderInput input) {
+    log.info("I=Iniciando criação de pedido para customerUuid={}", customerUuid);
     if (input.items() == null || input.items()
         .isEmpty()) {
+      log.warn("W=Falha na criação do pedido: lista de itens vazia para customerUuid={}", customerUuid);
       throw new BadRequestException("Order must have at least one item");
     }
 
@@ -53,9 +57,13 @@ public class CreateOrderUseCase {
     );
 
     var saved = orderRepository.save(order);
+    log.info("I=Pedido criado com sucesso uuid={} customerUuid={} total={}", saved.uuid(), saved.customerUuid(),
+        saved.totalAmount()
+    );
 
     // event
     publisher.publishOrderCreated(saved);
+    log.info("I=Processo de publicação de evento de pedido criado acionado para orderUuid={}", saved.uuid());
 
     return toOutput(saved);
   }
