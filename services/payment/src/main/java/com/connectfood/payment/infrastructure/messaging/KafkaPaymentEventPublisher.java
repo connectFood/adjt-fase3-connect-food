@@ -1,14 +1,16 @@
 package com.connectfood.payment.infrastructure.messaging;
 
+import com.connectfood.payment.domain.event.PaymentApprovedEvent;
+import com.connectfood.payment.domain.event.PaymentPendingEvent;
 import com.connectfood.payment.domain.port.PaymentEventPublisherPort;
-import com.connectfood.payment.infrastructure.messaging.events.PaymentApprovedEvent;
-import com.connectfood.payment.infrastructure.messaging.events.PaymentPendingEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class KafkaPaymentEventPublisher implements PaymentEventPublisherPort {
 
@@ -32,20 +34,20 @@ public class KafkaPaymentEventPublisher implements PaymentEventPublisherPort {
   @Override
   public void publishApproved(PaymentApprovedEvent event) {
     try {
-      kafka.send(approvedTopic, event.orderUuid()
-          .toString(), mapper.writeValueAsString(event)
-      );
-    } catch (Exception ignored) {
+      kafka.send(approvedTopic, event.orderUuid().toString(), mapper.writeValueAsString(event));
+      log.info("I=Evento pagamento.aprovado enviado para pedido {}", event.orderUuid());
+    } catch (Exception ex) {
+      log.error("E=Falha ao enviar evento pagamento.aprovado para pedido {}", event.orderUuid(), ex);
     }
   }
 
   @Override
   public void publishPending(PaymentPendingEvent event) {
     try {
-      kafka.send(pendingTopic, event.orderUuid()
-          .toString(), mapper.writeValueAsString(event)
-      );
-    } catch (Exception ignored) {
+      kafka.send(pendingTopic, event.orderUuid().toString(), mapper.writeValueAsString(event));
+      log.info("I=Evento pagamento.pendente enviado para pedido {} com motivo {}", event.orderUuid(), event.reason());
+    } catch (Exception ex) {
+      log.error("E=Falha ao enviar evento pagamento.pendente para pedido {}", event.orderUuid(), ex);
     }
   }
 }

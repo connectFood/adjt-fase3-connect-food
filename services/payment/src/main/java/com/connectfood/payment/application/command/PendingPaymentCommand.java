@@ -1,9 +1,9 @@
-package com.connectfood.payment.infrastructure.messaging.events;
+package com.connectfood.payment.application.command;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record PaymentPendingEvent(
+public record PendingPaymentCommand(
     UUID paymentUuid,
     UUID orderUuid,
     UUID customerUuid,

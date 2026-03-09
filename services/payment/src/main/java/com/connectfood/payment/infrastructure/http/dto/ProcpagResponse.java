@@ -1,9 +1,10 @@
 package com.connectfood.payment.infrastructure.http.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ProcpagResponse(
-    Object any
+    @JsonProperty("status") String status
 ) {
 }

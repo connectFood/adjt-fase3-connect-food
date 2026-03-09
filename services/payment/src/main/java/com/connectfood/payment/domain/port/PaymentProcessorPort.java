@@ -6,6 +6,13 @@ import java.util.UUID;
 public interface PaymentProcessorPort {
   PaymentProcessorResult process(UUID orderUuid, UUID customerUuid, BigDecimal amount);
 
-  record PaymentProcessorResult(boolean approved) {
+  record PaymentProcessorResult(boolean approved, String reason) {
+    public static PaymentProcessorResult approvedResult() {
+      return new PaymentProcessorResult(true, "APPROVED");
+    }
+
+    public static PaymentProcessorResult pendingResult(String reason) {
+      return new PaymentProcessorResult(false, reason);
+    }
   }
 }

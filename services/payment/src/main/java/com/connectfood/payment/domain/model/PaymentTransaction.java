@@ -11,4 +11,18 @@ public record PaymentTransaction(
     PaymentStatus status,
     BigDecimal amount
 ) {
+  public static PaymentTransaction newPending(UUID paymentUuid, UUID orderUuid, UUID customerUuid, BigDecimal amount) {
+    return new PaymentTransaction(
+        null,
+        paymentUuid == null ? UUID.randomUUID() : paymentUuid,
+        orderUuid,
+        customerUuid,
+        PaymentStatus.PENDING,
+        amount
+    );
+  }
+
+  public PaymentTransaction withStatus(PaymentStatus newStatus) {
+    return new PaymentTransaction(id, uuid, orderUuid, customerUuid, newStatus, amount);
+  }
 }

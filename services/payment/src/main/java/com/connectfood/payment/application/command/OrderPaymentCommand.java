@@ -1,10 +1,9 @@
-package com.connectfood.payment.infrastructure.messaging.events;
+package com.connectfood.payment.application.command;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public record PaymentApprovedEvent(
-    UUID paymentUuid,
+public record OrderPaymentCommand(
     UUID orderUuid,
     UUID customerUuid,
     BigDecimal amount

@@ -29,16 +29,16 @@ public final class PaymentInfraMapper {
     e.setUuid(tx.uuid() == null ? UUID.randomUUID() : tx.uuid());
     e.setOrderUuid(tx.orderUuid());
     e.setCustomerUuid(tx.customerUuid());
-    e.setStatus(tx.status()
-        .name());
+    e.setStatus(tx.status().name());
     e.setAmount(tx.amount());
     e.setCreatedAt(now);
     e.setUpdatedAt(now);
     return e;
   }
 
-  public static void applyStatusUpdate(PaymentTransactionEntity e, PaymentStatus status) {
-    e.setStatus(status.name());
+  public static void applyDomain(PaymentTransactionEntity e, PaymentTransaction tx) {
+    e.setStatus(tx.status().name());
+    e.setAmount(tx.amount());
     e.setUpdatedAt(OffsetDateTime.now());
   }
 }

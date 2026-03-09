@@ -3,7 +3,6 @@ package com.connectfood.payment.infrastructure.persistence;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.connectfood.payment.domain.model.PaymentStatus;
 import com.connectfood.payment.domain.model.PaymentTransaction;
 import com.connectfood.payment.domain.port.PaymentTransactionRepositoryPort;
 import com.connectfood.payment.infrastructure.persistence.mapper.PaymentInfraMapper;
@@ -24,22 +23,20 @@ public class PaymentTransactionRepositoryAdapter implements PaymentTransactionRe
   @Override
   @Transactional
   public PaymentTransaction save(PaymentTransaction tx) {
+    var existing = jpa.findByOrderUuid(tx.orderUuid());
+
+    if (existing.isPresent()) {
+      var entity = existing.get();
+      PaymentInfraMapper.applyDomain(entity, tx);
+      return PaymentInfraMapper.toDomain(jpa.save(entity));
+    }
+
     var saved = jpa.save(PaymentInfraMapper.toEntityForInsert(tx));
     return PaymentInfraMapper.toDomain(saved);
   }
 
   @Override
   public Optional<PaymentTransaction> findByOrderUuid(UUID orderUuid) {
-    return jpa.findByOrderUuid(orderUuid)
-        .map(PaymentInfraMapper::toDomain);
-  }
-
-  @Transactional
-  public void updateStatusByOrderUuid(UUID orderUuid, PaymentStatus status) {
-    jpa.findByOrderUuid(orderUuid)
-        .ifPresent(e -> {
-          PaymentInfraMapper.applyStatusUpdate(e, status);
-          jpa.save(e);
-        });
+    return jpa.findByOrderUuid(orderUuid).map(PaymentInfraMapper::toDomain);
   }
 }
