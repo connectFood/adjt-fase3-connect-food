@@ -1,0 +1,26 @@
+server:
+  port: 8084
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: ${SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA:restaurant}
+
+  flyway:
+    enabled: true
+    schemas: ${SPRING_FLYWAY_SCHEMAS:restaurant}
+    default-schema: ${SPRING_FLYWAY_DEFAULT_SCHEMA:restaurant}
+    locations: classpath:db/migration
+
+security:
+  jwt:
+    issuer: ${SECURITY_JWT_ISSUER:connectfood-auth}
+    secret: ${SECURITY_JWT_SECRET}
