@@ -1,0 +1,151 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    refresh:
+      enabled: false
+    gateway:
+      server:
+        webflux:
+          httpclient:
+            response-timeout: 3s
+          routes:
+            - id: auth-route
+              uri: ${services.auth-url:http://localhost:8081}
+              predicates:
+                - Path=/auth/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: authServiceCb
+                    fallbackUri: forward:/fallback/auth-service
+                - name: Retry
+                  args:
+                    retries: 2
+                    methods: GET,POST
+                    statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+            - id: order-route
+              uri: ${services.order-url:http://localhost:8082}
+              predicates:
+                - Path=/orders/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: orderServiceCb
+                    fallbackUri: forward:/fallback/order-service
+                - name: Retry
+                  args:
+                    retries: 2
+                    methods: GET,POST
+                    statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+            - id: payment-route
+              uri: ${services.payment-url:http://localhost:8083}
+              predicates:
+                - Path=/payments/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: paymentServiceCb
+                    fallbackUri: forward:/fallback/payment-service
+                - name: Retry
+                  args:
+                    retries: 2
+                    methods: GET,POST
+                    statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+            - id: restaurant-route
+              uri: ${services.restaurant-url:http://localhost:8084}
+              predicates:
+                - Path=/restaurants/**
+              filters:
+                - name: CircuitBreaker
+                  args:
+                    name: restaurantServiceCb
+                    fallbackUri: forward:/fallback/restaurant-service
+                - name: Retry
+                  args:
+                    retries: 2
+                    methods: GET,POST
+                    statuses: BAD_GATEWAY,SERVICE_UNAVAILABLE,GATEWAY_TIMEOUT
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs/gateway
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /v3/api-docs
+    disable-swagger-default-url: true
+
+services:
+  auth-url: ${AUTH_SERVICE_URL:http://localhost:8081}
+  order-url: ${ORDER_SERVICE_URL:http://localhost:8082}
+  payment-url: ${PAYMENT_SERVICE_URL:http://localhost:8083}
+  restaurant-url: ${RESTAURANT_SERVICE_URL:http://localhost:8084}
+
+security:
+  jwt:
+    issuer-uri: ${SECURITY_JWT_ISSUER_URI:connectfood-auth}
+    secret: ${SECURITY_JWT_SECRET:CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      authServiceCb:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+      orderServiceCb:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+      paymentServiceCb:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+      restaurantServiceCb:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        permittedNumberOfCallsInHalfOpenState: 3
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+  timelimiter:
+    instances:
+      authServiceCb:
+        timeoutDuration: 3s
+      orderServiceCb:
+        timeoutDuration: 3s
+      paymentServiceCb:
+        timeoutDuration: 3s
+      restaurantServiceCb:
+        timeoutDuration: 3s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT:http://localhost:4318/v1/traces}

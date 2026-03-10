@@ -179,34 +179,63 @@ services:
       - fase3net
     restart: unless-stopped
 
-#  restaurant-service:
-#    build:
-#      context: ./services/restaurant
-#      dockerfile: Dockerfile
-#    container_name: tc3-restaurant-service
-#    ports:
-#      - "8084:8084"
-#    environment:
-#      SPRING_PROFILES_ACTIVE: docker
-#
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tc3
-#      SPRING_DATASOURCE_USERNAME: connectfood
-#      SPRING_DATASOURCE_PASSWORD: connectfood
-#
-#      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: restaurant
-#      SPRING_FLYWAY_SCHEMAS: restaurant
-#      SPRING_FLYWAY_DEFAULT_SCHEMA: restaurant
-#
-#      SECURITY_JWT_ISSUER: connectfood-auth
-#      SECURITY_JWT_SECRET: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      auth-service:
-#        condition: service_started
-#    networks:
-#      - fase3net
-#    restart: unless-stopped
+  restaurant-service:
+    build:
+      context: ./services/restaurant
+      dockerfile: Dockerfile
+    container_name: tc3-restaurant-service
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tc3
+      SPRING_DATASOURCE_USERNAME: connectfood
+      SPRING_DATASOURCE_PASSWORD: connectfood
+
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: restaurant
+      SPRING_FLYWAY_SCHEMAS: restaurant
+      SPRING_FLYWAY_DEFAULT_SCHEMA: restaurant
+
+      SECURITY_JWT_ISSUER: connectfood-auth
+      SECURITY_JWT_SECRET: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - fase3net
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    container_name: tc3-api-gateway
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      AUTH_SERVICE_URL: http://auth-service:8081
+      ORDER_SERVICE_URL: http://order-service:8082
+      PAYMENT_SERVICE_URL: http://payment-service:8083
+      RESTAURANT_SERVICE_URL: http://restaurant-service:8084
+      SECURITY_JWT_ISSUER_URI: connectfood-auth
+      SECURITY_JWT_SECRET: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://localhost:4318/v1/traces
+    depends_on:
+      auth-service:
+        condition: service_started
+      order-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      restaurant-service:
+        condition: service_started
+    networks:
+      - fase3net
+    restart: unless-stopped
 
 networks:
   fase3net:
