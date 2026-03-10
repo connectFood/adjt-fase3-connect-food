@@ -18,6 +18,12 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U connectfood -d tc3"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - fase3net
     restart: unless-stopped
@@ -44,6 +50,12 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 20s
     networks:
       - fase3net
     restart: unless-stopped
@@ -57,7 +69,8 @@ services:
       KAFKA_CLUSTERS_0_NAME: fase3-cluster
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
     networks:
       - fase3net
     restart: unless-stopped
@@ -85,7 +98,8 @@ services:
       AUTH_JWT_ACCESS_TOKEN_TTL_MINUTES: 15
       AUTH_JWT_REFRESH_TOKEN_TTL_DAYS: 7
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     networks:
       - fase3net
     restart: unless-stopped
@@ -115,9 +129,52 @@ services:
       SECURITY_JWT_ISSUER: connectfood-auth
       SECURITY_JWT_SECRET: "CHANGE_ME_TO_A_LONG_RANDOM_SECRET_32+_CHARS"
     depends_on:
-      - postgres
-      - kafka
-      - auth-service
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    networks:
+      - fase3net
+    restart: unless-stopped
+
+  payment-service:
+    build:
+      context: ./services/payment
+      dockerfile: Dockerfile
+    container_name: tc3-payment-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tc3
+      SPRING_DATASOURCE_USERNAME: connectfood
+      SPRING_DATASOURCE_PASSWORD: connectfood
+
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: payment
+      SPRING_FLYWAY_SCHEMAS: payment
+      SPRING_FLYWAY_DEFAULT_SCHEMA: payment
+
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      SPRING_KAFKA_CONSUMER_GROUP_ID: payment-service
+      PAYMENT_TOPICS_ORDER_CREATED: pedido.criado
+      PAYMENT_TOPICS_PAYMENT_APPROVED: pagamento.aprovado
+      PAYMENT_TOPICS_PAYMENT_PENDING: pagamento.pendente
+
+      PROCPAG_BASE_URL: http://procpag:8089
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      procpag:
+        condition: service_started
+      auth-service:
+        condition: service_started
+      order-service:
+        condition: service_started
     networks:
       - fase3net
     restart: unless-stopped
