@@ -34,12 +34,8 @@ payment:
     order-created: ${PAYMENT_TOPICS_ORDER_CREATED:pedido.criado}
     payment-approved: ${PAYMENT_TOPICS_PAYMENT_APPROVED:pagamento.aprovado}
     payment-pending: ${PAYMENT_TOPICS_PAYMENT_PENDING:pagamento.pendente}
-    payment-pending-dlt: ${PAYMENT_TOPICS_PAYMENT_PENDING_DLT:pagamento.pendente-dlt}
-  pending-retry:
-    attempts: ${PAYMENT_PENDING_RETRY_ATTEMPTS:4}
-    delay-ms: ${PAYMENT_PENDING_RETRY_DELAY_MS:10000}
-    multiplier: ${PAYMENT_PENDING_RETRY_MULTIPLIER:2.0}
-    max-delay-ms: ${PAYMENT_PENDING_RETRY_MAX_DELAY_MS:120000}
+  pending-reprocess:
+    max-attempts: ${PAYMENT_PENDING_REPROCESS_MAX_ATTEMPTS:8}
 
 procpag:
   base-url: ${PROCPAG_BASE_URL:http://procpag:8089}
@@ -51,7 +47,8 @@ resilience:
       max-attempts: ${PROCPAG_RETRY_MAX_ATTEMPTS:3}
       wait-ms: ${PROCPAG_RETRY_WAIT_MS:200}
     circuit-breaker:
-      sliding-window-size: ${PROCPAG_CB_WINDOW_SIZE:10}
-      failure-rate-threshold: ${PROCPAG_CB_FAILURE_RATE:50}
+      sliding-window-size: ${PROCPAG_CB_WINDOW_SIZE:20}
+      minimum-number-of-calls: ${PROCPAG_CB_MIN_CALLS:20}
+      failure-rate-threshold: ${PROCPAG_CB_FAILURE_RATE:80}
       wait-duration-open-ms: ${PROCPAG_CB_OPEN_MS:5000}
       permitted-calls-half-open: ${PROCPAG_CB_HALF_OPEN_CALLS:3}

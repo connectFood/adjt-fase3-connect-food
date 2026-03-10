@@ -32,12 +32,4 @@ public class KafkaTopicsConfig {
         .replicas(1)
         .build();
   }
-
-  @Bean
-  public NewTopic pagamentoPendenteDlt(@Value("${payment.topics.payment-pending-dlt:pagamento.pendente-dlt}") String name) {
-    return TopicBuilder.name(name)
-        .partitions(1)
-        .replicas(1)
-        .build();
-  }
 }

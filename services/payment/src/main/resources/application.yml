@@ -34,12 +34,8 @@ payment:
     order-created: pedido.criado
     payment-approved: pagamento.aprovado
     payment-pending: pagamento.pendente
-    payment-pending-dlt: pagamento.pendente-dlt
-  pending-retry:
-    attempts: 4
-    delay-ms: 10000
-    multiplier: 2.0
-    max-delay-ms: 120000
+  pending-reprocess:
+    max-attempts: 8
 
 procpag:
   base-url: http://localhost:8089
@@ -51,7 +47,8 @@ resilience:
       max-attempts: 3
       wait-ms: 200
     circuit-breaker:
-      sliding-window-size: 10
-      failure-rate-threshold: 50
+      sliding-window-size: 20
+      minimum-number-of-calls: 20
+      failure-rate-threshold: 80
       wait-duration-open-ms: 5000
       permitted-calls-half-open: 3

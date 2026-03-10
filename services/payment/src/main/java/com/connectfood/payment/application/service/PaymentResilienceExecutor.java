@@ -35,13 +35,15 @@ public class PaymentResilienceExecutor {
       @Value("${resilience.procpag.timeout-ms:1500}") long timeoutMs,
       @Value("${resilience.procpag.retry.max-attempts:3}") int maxAttempts,
       @Value("${resilience.procpag.retry.wait-ms:200}") long waitMs,
-      @Value("${resilience.procpag.circuit-breaker.sliding-window-size:10}") int windowSize,
-      @Value("${resilience.procpag.circuit-breaker.failure-rate-threshold:50}") float failureRate,
+      @Value("${resilience.procpag.circuit-breaker.sliding-window-size:20}") int windowSize,
+      @Value("${resilience.procpag.circuit-breaker.minimum-number-of-calls:20}") int minimumNumberOfCalls,
+      @Value("${resilience.procpag.circuit-breaker.failure-rate-threshold:80}") float failureRate,
       @Value("${resilience.procpag.circuit-breaker.wait-duration-open-ms:5000}") long openMs,
       @Value("${resilience.procpag.circuit-breaker.permitted-calls-half-open:3}") int halfOpenCalls
   ) {
     this.circuitBreaker = CircuitBreaker.of("procpag", CircuitBreakerConfig.custom()
         .slidingWindowSize(windowSize)
+        .minimumNumberOfCalls(minimumNumberOfCalls)
         .failureRateThreshold(failureRate)
         .waitDurationInOpenState(Duration.ofMillis(openMs))
         .permittedNumberOfCallsInHalfOpenState(halfOpenCalls)
@@ -72,6 +74,11 @@ public class PaymentResilienceExecutor {
     } catch (CompletionException ex) {
       throw new IllegalStateException("Procpag risk API call failed", ex.getCause() == null ? ex : ex.getCause());
     }
+  }
+
+  public boolean isCircuitOpen() {
+    var state = circuitBreaker.getState();
+    return state == CircuitBreaker.State.OPEN || state == CircuitBreaker.State.FORCED_OPEN;
   }
 
   @PreDestroy

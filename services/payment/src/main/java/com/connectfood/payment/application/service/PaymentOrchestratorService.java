@@ -63,7 +63,11 @@ public class PaymentOrchestratorService {
       }
       return PaymentStatus.PENDING;
     } catch (Exception ex) {
-      log.error("E=Falha ao processar pagamento para pedido {}", paymentTransaction.orderUuid(), ex);
+      log.warn(
+          "W=Tentativas da API Procpag esgotadas para pedido {}. mensagem={}",
+          paymentTransaction.orderUuid(),
+          ex.getMessage()
+      );
       var pendingTransaction = repository.save(paymentTransaction.withStatus(PaymentStatus.PENDING));
       if (publishPendingEvent) {
         publishPending(pendingTransaction, DEFAULT_UNAVAILABLE_REASON);
