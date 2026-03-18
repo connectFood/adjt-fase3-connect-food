@@ -47,7 +47,11 @@ public class PaymentOrchestratorService {
 
       if (result.approved()) {
         log.info("I=Pagamento aprovado pela Procpag para pedido {}", paymentTransaction.orderUuid());
-        publishApproved(repository.save(paymentTransaction.withStatus(PaymentStatus.APPROVED)));
+        publishApproved(repository.save(
+            paymentTransaction
+                .withStatus(PaymentStatus.APPROVED)
+                .resetPendingReprocessAttempts()
+        ));
         return PaymentStatus.APPROVED;
       }
 

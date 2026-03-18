@@ -25,6 +25,8 @@ spring:
     consumer:
       group-id: payment-service
       auto-offset-reset: earliest
+    listener:
+      ack-mode: manual_immediate
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -35,6 +37,7 @@ payment:
     payment-approved: pagamento.aprovado
     payment-pending: pagamento.pendente
   pending-reprocess:
+    delay-ms: 5000
     max-attempts: 8
 
 procpag:

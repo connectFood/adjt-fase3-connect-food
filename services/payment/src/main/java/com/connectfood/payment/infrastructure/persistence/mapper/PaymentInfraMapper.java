@@ -18,7 +18,8 @@ public final class PaymentInfraMapper {
         e.getOrderUuid(),
         e.getCustomerUuid(),
         PaymentStatus.valueOf(e.getStatus()),
-        e.getAmount()
+        e.getAmount(),
+        e.getPendingReprocessAttempts() == null ? 0 : e.getPendingReprocessAttempts()
     );
   }
 
@@ -31,6 +32,7 @@ public final class PaymentInfraMapper {
     e.setCustomerUuid(tx.customerUuid());
     e.setStatus(tx.status().name());
     e.setAmount(tx.amount());
+    e.setPendingReprocessAttempts(tx.pendingReprocessAttempts());
     e.setCreatedAt(now);
     e.setUpdatedAt(now);
     return e;
@@ -39,6 +41,7 @@ public final class PaymentInfraMapper {
   public static void applyDomain(PaymentTransactionEntity e, PaymentTransaction tx) {
     e.setStatus(tx.status().name());
     e.setAmount(tx.amount());
+    e.setPendingReprocessAttempts(tx.pendingReprocessAttempts());
     e.setUpdatedAt(OffsetDateTime.now());
   }
 }

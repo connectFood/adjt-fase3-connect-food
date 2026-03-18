@@ -39,6 +39,9 @@ public class PaymentTransactionEntity {
   @Column(nullable = false, precision = 12, scale = 2)
   private BigDecimal amount;
 
+  @Column(name = "pending_reprocess_attempts", nullable = false)
+  private Integer pendingReprocessAttempts;
+
   @Column(name = "created_at", nullable = false)
   private OffsetDateTime createdAt;
 
