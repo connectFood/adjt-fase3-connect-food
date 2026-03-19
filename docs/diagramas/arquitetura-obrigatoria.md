@@ -8,7 +8,7 @@ flowchart LR
 
     subgraph Plataforma["Connect Food - Fluxo obrigatorio"]
         auth[auth-service<br/>cadastro, login, refresh, JWT]
-        order[order-service<br/>criar pedido, consultar pedido,<br/>consumir pagamento.aprovado]
+        order[order-service<br/>criar pedido, consultar por id,<br/>listar pedidos para admin/dono,<br/>consumir pagamento.aprovado]
         payment[payment-service<br/>consumir pedido.criado,<br/>integrar com Procpag,<br/>publicar eventos]
     end
 
@@ -20,7 +20,8 @@ flowchart LR
 
     cliente -->|POST /auth/register<br/>POST /auth/login| auth
     cliente -->|GET /auth/me| auth
-    cliente -->|POST /orders<br/>GET /orders| order
+    cliente -->|POST /orders<br/>GET /orders/uuid| order
+    cliente -->|GET /orders<br/>somente ADMIN/RESTAURANT_OWNER| order
 
     auth -->|persiste usuarios e refresh tokens| postgres
     order -->|persiste pedidos| postgres

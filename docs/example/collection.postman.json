@@ -1,0 +1,1540 @@
+{
+  "info": {
+    "_postman_id": "e7d7b53f-1312-4206-a5fb-33401f0ef481",
+    "name": "ConnectFood - Restaurant Management System (Swagger) - E2E",
+    "description": "E2E collection generated from provided OpenAPI. Uses Collection variables for chaining (create -> get -> update -> delete).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29045358"
+  },
+  "item": [
+    {
+      "name": "01 - Users Types",
+      "item": [
+        {
+          "name": "01.01 - Create UsersType OWNER (POST /v1/users-types)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('usersTypeUuidOwner', json.content.uuid);",
+                  "pm.collectionVariables.set('usersTypeNameOwner', json.content.name);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"OWNER\",\n  \"description\": \"Owner role for Postman E2E\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01.02 - Create UsersType CUSTOMER (POST /v1/users-types)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('usersTypeUuidCustomer', json.content.uuid);",
+                  "pm.collectionVariables.set('usersTypeNameCustomer', json.content.name);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"CUSTOMER\",\n  \"description\": \"Customer role for Postman E2E\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01.04 - Find UsersType by UUID OWNER (GET /v1/users-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('usersTypeUuidOwner')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types/{{usersTypeUuidOwner}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types",
+                "{{usersTypeUuidOwner}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01.05 - Find UsersType by UUID CUSTOMER (GET /v1/users-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('usersTypeUuidCustomer')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types/{{usersTypeUuidCustomer}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types",
+                "{{usersTypeUuidCustomer}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "01.06 - Search UsersTypes (GET /v1/users-types)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('content is array', () => pm.expect(json.content).to.be.an('array'));",
+                  "pm.test('page and size present', () => {",
+                  "  pm.expect(json).to.have.property('page');",
+                  "  pm.expect(json).to.have.property('size');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types?page=0&size=10&name={{usersTypeNameOwner}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                },
+                {
+                  "key": "name",
+                  "value": "{{usersTypeNameOwner}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Users",
+      "item": [
+        {
+          "name": "02.01 - Create User OWNER (POST /v1/users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('userUuidOwner', json.content.uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"{{$randomFirstName}} {{$randomLastName}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"s3cureP@ss\",\n  \"usersTypeUuid\": \"{{usersTypeUuidOwner}}\",\n  \"address\": {\n    \"street\": \"Rua das Estrelas\",\n    \"number\": \"123\",\n    \"complement\": \"Apartment 45\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"country\": \"Brazil\",\n    \"zipCode\": \"01000-000\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.02 - Create User CUSTOMER (POST /v1/users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('userUuidCustomer', json.content.uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"{{$randomFirstName}} {{$randomLastName}}\",\n  \"email\": \"{{$randomEmail}}\",\n  \"password\": \"s3cureP@ss\",\n  \"usersTypeUuid\": \"{{usersTypeUuidCustomer}}\",\n  \"address\": {\n    \"street\": \"Rua das Estrelas\",\n    \"number\": \"123\",\n    \"complement\": \"Apartment 45\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"country\": \"Brazil\",\n    \"zipCode\": \"01000-000\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.03 - Find User by UUID OWNER(GET /v1/users/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('userUuidOwner')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/{{userUuidOwner}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users",
+                "{{userUuidOwner}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.04 - Find User by UUID CUSTOMER (GET /v1/users/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('userUuidCustomer')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/{{userUuidCustomer}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users",
+                "{{userUuidCustomer}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.05 - Search Users (GET /v1/users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('content is array', () => pm.expect(json.content).to.be.an('array'));",
+                  "pm.test('pagination present', () => {",
+                  "  pm.expect(json).to.have.property('page');",
+                  "  pm.expect(json).to.have.property('size');",
+                  "  pm.expect(json).to.have.property('total');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users?page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.06 - Search Users by UsersType (GET /v1/users)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('content is array', () => pm.expect(json.content).to.be.an('array'));",
+                  "pm.test('pagination present', () => {",
+                  "  pm.expect(json).to.have.property('page');",
+                  "  pm.expect(json).to.have.property('size');",
+                  "  pm.expect(json).to.have.property('total');",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users?usersTypeUuid={{usersTypeUuidOwner}}&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "usersTypeUuid",
+                  "value": "{{usersTypeUuidOwner}}"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Restaurants Types",
+      "item": [
+        {
+          "name": "03.01 - Create Restaurant Type (POST /v1/restaurants-types)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('restaurantTypeUuid', json.content.uuid);",
+                  "pm.collectionVariables.set('restaurantTypeName', json.content.name);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"STEAKHOUSE-{{$randomInt}}\",\n  \"description\": \"Restaurant type for Postman E2E\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants-types",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants-types"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03.02 - Find Restaurant Type by UUID (GET /v1/restaurants-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('restaurantTypeUuid')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants-types/{{restaurantTypeUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants-types",
+                "{{restaurantTypeUuid}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Restaurants",
+      "item": [
+        {
+          "name": "04.01 - Create Restaurant (POST /v1/restaurants) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('restaurantUuid', json.content.uuid);",
+                  "",
+                  "// Try to capture openingHoursUuid if API returns at least one item",
+                  "if (json.content.openingHours && json.content.openingHours.length > 0) {",
+                  "  pm.collectionVariables.set('openingHoursUuid', json.content.openingHours[0].uuid);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Outback-{{$randomInt}}\",\n  \"restaurantsTypeUuid\": \"{{restaurantTypeUuid}}\",\n  \"usersUuid\": \"{{userUuidOwner}}\",\n  \"openingHours\": [\n    { \"dayOfWeek\": \"MONDAY\", \"startTime\": \"09:00:00\", \"endTime\": \"18:00:00\" }\n  ],\n  \"address\": {\n    \"street\": \"Rua das Estrelas\",\n    \"number\": \"123\",\n    \"complement\": \"Apartment 45\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"country\": \"Brazil\",\n    \"zipCode\": \"01000-000\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04.02 - Errror Create Restaurant (POST /v1/restaurants) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('403 Forbidden', () => pm.expect(pm.response.code).to.eql(403));",
+                  "const json = pm.response.json();",
+                  "pm.test('detail', () => pm.expect(json.detail).to.eql('User does not have permission for this operation'));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidCustomer}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Outback-{{$randomInt}}\",\n  \"restaurantsTypeUuid\": \"{{restaurantTypeUuid}}\",\n  \"usersUuid\": \"{{userUuidCustomer}}\",\n  \"openingHours\": [\n    { \"dayOfWeek\": \"MONDAY\", \"startTime\": \"09:00:00\", \"endTime\": \"18:00:00\" }\n  ],\n  \"address\": {\n    \"street\": \"Rua das Estrelas\",\n    \"number\": \"123\",\n    \"complement\": \"Apartment 45\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"country\": \"Brazil\",\n    \"zipCode\": \"01000-000\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04.03 - Find Restaurant by UUID (GET /v1/restaurants/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('restaurantUuid')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/{{restaurantUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "{{restaurantUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04.04 - Update Restaurant (PUT /v1/restaurants/{uuid}) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('restaurantUuid')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Outback-UPDATED-{{$randomInt}}\",\n  \"restaurantsTypeUuid\": \"{{restaurantTypeUuid}}\",\n  \"usersUuid\": \"{{userUuidOwner}}\",\n  \"openingHours\": [\n    { \"dayOfWeek\": \"MONDAY\", \"startTime\": \"10:00:00\", \"endTime\": \"19:00:00\" }\n  ],\n  \"address\": {\n    \"street\": \"Rua das Estrelas\",\n    \"number\": \"123\",\n    \"complement\": \"Apartment 45\",\n    \"neighborhood\": \"Centro\",\n    \"city\": \"São Paulo\",\n    \"state\": \"SP\",\n    \"country\": \"Brazil\",\n    \"zipCode\": \"01000-000\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/{{restaurantUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "{{restaurantUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "04.05 - Search Restaurants (GET /v1/restaurants)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('content is array', () => pm.expect(json.content).to.be.an('array'));",
+                  "pm.test('pagination present', () => {",
+                  "  pm.expect(json).to.have.property('page');",
+                  "  pm.expect(json).to.have.property('size');",
+                  "  pm.expect(json).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants?restaurantsTypeUuid={{restaurantTypeUuid}}&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants"
+              ],
+              "query": [
+                {
+                  "key": "restaurantsTypeUuid",
+                  "value": "{{restaurantTypeUuid}}"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Opening Hours",
+      "item": [
+        {
+          "name": "05.01 - Create Opening Hours (POST /v1/restaurants/{uuid}/opening-hours) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('openingHours uuid exists', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('openingHoursUuid', json.content.uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dayOfWeek\": \"TUESDAY\",\n  \"startTime\": \"09:00:00\",\n  \"endTime\": \"18:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/{{restaurantUuid}}/opening-hours",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "{{restaurantUuid}}",
+                "opening-hours"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.02 - Update Opening Hours (PUT /v1/restaurants/opening-hours/{openingHoursUuid}) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('openingHoursUuid')));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dayOfWeek\": \"TUESDAY\",\n  \"startTime\": \"10:00:00\",\n  \"endTime\": \"19:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/opening-hours/{{openingHoursUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "opening-hours",
+                "{{openingHoursUuid}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 - Restaurant Items",
+      "item": [
+        {
+          "name": "06.01 - Create Restaurant Item (POST /v1/restaurant-items) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('content.uuid is UUID', () => pm.expect(json.content.uuid).to.match(/^[0-9a-fA-F-]{36}$/));",
+                  "pm.collectionVariables.set('restaurantItemUuid', json.content.uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"X-Burger-{{$randomInt}}\",\n  \"description\": \"Burger with beef, cheese and lettuce\",\n  \"value\": 29.9,\n  \"requestType\": \"DELIVERY\",\n  \"restaurantUuid\": \"{{restaurantUuid}}\",\n  \"images\": [\n    {\n      \"name\": \"Main Image\",\n      \"description\": \"Front view\",\n      \"path\": \"/items/x-burger/main.png\"\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurant-items",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurant-items"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06.02 - Find Restaurant Item by UUID (GET /v1/restaurant-items/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('success=true', () => pm.expect(json.success).to.eql(true));",
+                  "pm.test('uuid matches', () => pm.expect(json.content.uuid).to.eql(pm.collectionVariables.get('restaurantItemUuid')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurant-items/{{restaurantItemUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurant-items",
+                "{{restaurantItemUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "06.03 - Search Restaurant Items (GET /v1/restaurant-items)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "const json = pm.response.json();",
+                  "pm.test('content is array', () => pm.expect(json.content).to.be.an('array'));",
+                  "pm.test('pagination present', () => {",
+                  "  pm.expect(json).to.have.property('page');",
+                  "  pm.expect(json).to.have.property('size');",
+                  "  pm.expect(json).to.have.property('total');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurant-items?restaurantUuid={{restaurantUuid}}&page=0&size=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurant-items"
+              ],
+              "query": [
+                {
+                  "key": "restaurantUuid",
+                  "value": "{{restaurantUuid}}"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "99 - Cleanup (Deletes)",
+      "item": [
+        {
+          "name": "99.01 - Delete Restaurant Item (DELETE /v1/restaurant-items/{uuid}) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurant-items/{{restaurantItemUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurant-items",
+                "{{restaurantItemUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.02 - Delete Opening Hours (DELETE /v1/restaurants/opening-hours/{openingHoursUuid}) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/opening-hours/{{openingHoursUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "opening-hours",
+                "{{openingHoursUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.03 - Delete Restaurant (DELETE /v1/restaurants/{uuid}) [Requires Header]",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Request-User-Uuid",
+                "value": "{{userUuidOwner}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants/{{restaurantUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants",
+                "{{restaurantUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.04 - Delete Restaurant Type (DELETE /v1/restaurants-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/restaurants-types/{{restaurantTypeUuid}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "restaurants-types",
+                "{{restaurantTypeUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.05 - Delete User OWNER (DELETE /v1/users/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/{{userUuidOwner}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users",
+                "{{userUuidOwner}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.06 - Delete User CUSTOMER (DELETE /v1/users/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users/{{userUuidCustomer}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users",
+                "{{userUuidCustomer}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.07 - Delete UsersType OWNER (DELETE /v1/users-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types/{{usersTypeUuidOwner}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types",
+                "{{usersTypeUuidOwner}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "99.08 - Delete UsersType CUSTOMER (DELETE /v1/users-types/{uuid})",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('204 No Content', () => pm.expect(pm.response.code).to.eql(204));"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/users-types/{{usersTypeUuidCustomer}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "v1",
+                "users-types",
+                "{{usersTypeUuidCustomer}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global prerequest for the Collection",
+          "// Ensure baseUrl exists",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "  pm.collectionVariables.set('baseUrl', 'http://localhost:9090');",
+          "}",
+          "",
+          "// If request should include Request-User-Uuid and it's not present, inject it",
+          "const needsHeader = pm.request.headers.has('Request-User-Uuid');",
+          "const hasValue = pm.request.headers.get('Request-User-Uuid');",
+          "const requestUserUuid = pm.collectionVariables.get('requestUserUuid');",
+          "",
+          "if (needsHeader && (!hasValue || hasValue.trim().length === 0)) {",
+          "  pm.request.headers.upsert({ key: 'Request-User-Uuid', value: requestUserUuid });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Baseline assertions",
+          "pm.test('Status code is present', function () {",
+          "  pm.expect(pm.response.code).to.be.a('number');",
+          "});",
+          "",
+          "pm.test('Response time < 2000ms', function () {",
+          "  pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:9090",
+      "type": "string"
+    },
+    {
+      "key": "requestUserUuid",
+      "value": "11111111-1111-1111-1111-111111111111",
+      "type": "string",
+      "description": "Must be a valid user UUID with permission for endpoints requiring Request-User-Uuid header."
+    },
+    {
+      "key": "invalidUuid",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    },
+    {
+      "key": "usersTypeUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurantTypeUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurantUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "openingHoursUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "restaurantItemUuid",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "usersTypeUuidOwner",
+      "value": ""
+    },
+    {
+      "key": "usersTypeNameOwner",
+      "value": ""
+    },
+    {
+      "key": "usersTypeUuidCustomer",
+      "value": ""
+    },
+    {
+      "key": "usersTypeNameCustomer",
+      "value": ""
+    },
+    {
+      "key": "userUuidOwner",
+      "value": ""
+    },
+    {
+      "key": "userUuidCustomer",
+      "value": ""
+    },
+    {
+      "key": "restaurantTypeName",
+      "value": ""
+    }
+  ]
+}

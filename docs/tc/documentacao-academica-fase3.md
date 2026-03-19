@@ -104,7 +104,7 @@ flowchart LR
 
     subgraph Plataforma["Connect Food - Fluxo obrigatorio"]
         auth[auth-service<br/>cadastro, login, refresh, JWT]
-        order[order-service<br/>criar pedido, consultar pedido,<br/>consumir pagamento.aprovado]
+        order[order-service<br/>criar pedido, consultar por id,<br/>listar pedidos para admin/dono,<br/>consumir pagamento.aprovado]
         payment[payment-service<br/>consumir pedido.criado,<br/>integrar com Procpag,<br/>publicar eventos]
     end
 
@@ -116,7 +116,8 @@ flowchart LR
 
     cliente -->|POST /auth/register<br/>POST /auth/login| auth
     cliente -->|GET /auth/me| auth
-    cliente -->|POST /orders<br/>GET /orders| order
+    cliente -->|POST /orders<br/>GET /orders/{uuid}| order
+    cliente -->|GET /orders<br/>somente ADMIN/RESTAURANT_OWNER| order
 
     auth -->|persiste usuarios e refresh tokens| postgres
     order -->|persiste pedidos| postgres
@@ -466,12 +467,13 @@ O `order-service` implementa os seguintes casos de uso principais:
 - `ListOrdersByCustomerUseCase`
 - `UpdateOrderStatusUseCase`
 
-No fluxo de criacao, o sistema extrai o identificador do cliente a partir do JWT, valida a lista de itens, calcula o valor total, persiste o pedido e publica o evento `pedido.criado`. Nas consultas, o pedido pode ser recuperado individualmente ou por cliente autenticado.
+No fluxo de criacao, o sistema extrai o identificador do cliente a partir do JWT, valida a lista de itens, calcula o valor total, persiste o pedido e publica o evento `pedido.criado`. Nas consultas, o pedido pode ser recuperado individualmente por qualquer usuario autenticado, enquanto a listagem `GET /orders` fica restrita a usuarios com papel `ADMIN` ou `RESTAURANT_OWNER`.
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Cliente
+    actor Gestor as Admin ou Dono do Restaurante
     participant Order as order-service
     participant OrderDB as PostgreSQL order
     participant Kafka as Kafka
@@ -507,15 +509,24 @@ sequenceDiagram
     end
 
     rect rgb(242, 250, 244)
-        Note over Cliente,OrderDB: Consulta dos pedidos do cliente autenticado
-        Cliente->>Order: GET /orders com JWT
+        Note over Gestor,OrderDB: Listagem de pedidos disponivel apenas para ADMIN e RESTAURANT_OWNER
+        Gestor->>Order: GET /orders com JWT
         activate Order
-        Order->>Order: extrai customerUuid do JWT
-        Order->>OrderDB: lista pedidos por customerUuid
+        Order->>Order: valida role ADMIN ou RESTAURANT_OWNER
+        Order->>OrderDB: lista pedidos por usuario autenticado
         activate OrderDB
         OrderDB-->>Order: lista de pedidos
         deactivate OrderDB
-        Order-->>Cliente: lista de pedidos
+        Order-->>Gestor: lista de pedidos
+        deactivate Order
+    end
+
+    rect rgb(252, 244, 244)
+        Note over Cliente,Order: Restricao para cliente autenticado
+        Cliente->>Order: GET /orders com JWT de CUSTOMER
+        activate Order
+        Order->>Order: valida role
+        Order-->>Cliente: 403 Forbidden
         deactivate Order
     end
 ```
@@ -724,7 +735,7 @@ Os endpoints implementados para os fluxos obrigatorios estao concentrados nos se
 | --- | --- | --- | --- |
 | POST | `/orders` | Criar pedido | Sim |
 | GET | `/orders/{uuid}` | Consultar pedido por identificador | Sim |
-| GET | `/orders` | Listar pedidos do cliente autenticado | Sim |
+| GET | `/orders` | Listar pedidos do usuario autenticado, restrito a `ADMIN` e `RESTAURANT_OWNER` | Sim |
 
 ### 7.3 Observacoes de documentacao OpenAPI
 
@@ -858,7 +869,8 @@ Do ponto de vista academico, esta secao e importante porque demonstra a capacida
   - refresh token;
   - criacao de pedido;
   - consulta de pedido por UUID;
-  - consulta de pedidos do cliente autenticado.
+  - listagem de pedidos para `ADMIN` e `RESTAURANT_OWNER`;
+  - validacao de bloqueio do `CUSTOMER` na rota `GET /orders`.
 
 Caso a equipe deseje, essa collection pode ser adicionada em iteracao posterior ao repositorio e referenciada diretamente nesta secao.
 

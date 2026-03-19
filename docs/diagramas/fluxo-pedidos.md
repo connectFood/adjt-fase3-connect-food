@@ -1,11 +1,12 @@
 # Fluxo de criacao e consulta de pedidos
 
-Este arquivo cobre os fluxos obrigatorios implementados no `order-service`: criacao do pedido e consultas por identificador e por cliente autenticado.
+Este arquivo cobre os fluxos obrigatorios implementados no `order-service`: criacao do pedido, consulta por identificador e listagem restrita a `ADMIN` e `RESTAURANT_OWNER`.
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor Cliente
+    actor Gestor as Admin ou Dono do Restaurante
     participant Order as order-service
     participant OrderDB as PostgreSQL order
     participant Kafka as Kafka
@@ -41,15 +42,24 @@ sequenceDiagram
     end
 
     rect rgb(242, 250, 244)
-        Note over Cliente,OrderDB: Consulta dos pedidos do cliente autenticado
-        Cliente->>Order: GET /orders com JWT
+        Note over Gestor,OrderDB: Listagem de pedidos disponivel apenas para ADMIN e RESTAURANT_OWNER
+        Gestor->>Order: GET /orders com JWT
         activate Order
-        Order->>Order: extrai customerUuid do JWT
-        Order->>OrderDB: lista pedidos por customerUuid
+        Order->>Order: valida role ADMIN ou RESTAURANT_OWNER
+        Order->>OrderDB: lista pedidos por usuario autenticado
         activate OrderDB
         OrderDB-->>Order: lista de pedidos
         deactivate OrderDB
-        Order-->>Cliente: lista de pedidos
+        Order-->>Gestor: lista de pedidos
+        deactivate Order
+    end
+
+    rect rgb(252, 244, 244)
+        Note over Cliente,Order: Restricao para cliente autenticado
+        Cliente->>Order: GET /orders com JWT de CUSTOMER
+        activate Order
+        Order->>Order: valida role
+        Order-->>Cliente: 403 Forbidden
         deactivate Order
     end
 ```
