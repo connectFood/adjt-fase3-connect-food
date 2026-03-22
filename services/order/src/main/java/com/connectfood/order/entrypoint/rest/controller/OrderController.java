@@ -9,6 +9,7 @@ import com.connectfood.order.entrypoint.rest.dto.CreateOrderRequest;
 import com.connectfood.order.entrypoint.rest.mapper.OrderRestMapper;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,13 +53,16 @@ public class OrderController {
 
   @GetMapping
   public ResponseEntity<?> listMine() {
-    var customerUuid = getAuthenticatedUserUuid();
-    return ResponseEntity.ok(listOrdersByCustomerUseCase.execute(customerUuid));
+    return ResponseEntity.ok(listOrdersByCustomerUseCase.executeAll());
   }
 
   private UUID getAuthenticatedUserUuid() {
-    var auth = SecurityContextHolder.getContext()
-        .getAuthentication();
+    var auth = getAuthentication();
     return UUID.fromString(String.valueOf(auth.getPrincipal()));
+  }
+
+  private Authentication getAuthentication() {
+    return SecurityContextHolder.getContext()
+        .getAuthentication();
   }
 }

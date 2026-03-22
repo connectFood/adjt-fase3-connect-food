@@ -856,6 +856,232 @@ Exemplo conceitual:
 
 ## 9. Collection para Testes
 
+Para apoiar a validação funcional da solução, o repositório disponibiliza a collection Postman [connectfood-fase3-e2e.postman_collection.json](/c:/Users/lucas/OneDrive/Desktop/fiap/tc-3/services/adjt-fase3-connect-food/docs/collection/connectfood-fase3-e2e.postman_collection.json), localizada no diretório `docs/collection`.
+
+Essa collection foi estruturada para que o professor consiga executar os cenários principais do projeto com o menor nível possível de configuração manual. O arquivo concentra os testes integrados dos fluxos obrigatórios do `auth-service` e do `order-service`, cobrindo cadastro, autenticação, autorização por perfil e operações de pedido.
+
+Os cenários contemplados incluem:
+
+- cadastro de usuários com os perfis `CUSTOMER`, `ADMIN` e `RESTAURANT_OWNER`;
+- validação de tentativa de cadastro duplicado;
+- validação de perfil inválido;
+- autenticação dos usuários cadastrados;
+- consulta da identidade autenticada por meio do endpoint `/auth/me`;
+- renovação de token com `/auth/refresh`;
+- criação de pedidos por usuários autenticados;
+- validação da restrição do perfil `CUSTOMER` à rota `GET /orders`;
+- validação do acesso permitido a `GET /orders` apenas para `ADMIN` e `RESTAURANT_OWNER`;
+- consulta de pedidos por UUID conforme o comportamento atualmente implementado no sistema.
+
+### 9.1. Onde a collection está no repositório
+
+O arquivo encontra-se versionado no seguinte caminho:
+
+`/docs/collection/connectfood-fase3-e2e.postman_collection.json`
+
+Esse é o arquivo que deve ser importado diretamente no Postman.
+
+### 9.2. Como a collection foi preparada
+
+A collection utiliza variáveis dinâmicas do Postman para evitar ajustes manuais entre uma execução e outra. Durante a execução:
+
+1. o script de pré-processamento gera e-mails, nomes, senhas e identificadores auxiliares dinâmicos;
+2. os requests de cadastro criam usuários únicos;
+3. os testes automáticos armazenam UUIDs retornados pela API;
+4. os requests de login armazenam os tokens JWT necessários para os próximos passos;
+5. os requests de pedidos reutilizam esses UUIDs e tokens automaticamente.
+
+Na prática, isso significa que o professor não precisa editar payloads, copiar UUIDs manualmente ou alterar e-mails antes de repetir o fluxo.
+
+### 9.3. Preparação do ambiente antes dos testes
+
+Antes de utilizar a collection, recomenda-se executar o seguinte procedimento:
+
+1. iniciar a aplicação e garantir que os serviços obrigatórios estejam em funcionamento;
+2. verificar se `auth-service` e `order-service` estão acessíveis;
+3. abrir o Postman;
+4. importar a collection localizada em `docs/collection/connectfood-fase3-e2e.postman_collection.json`;
+5. revisar as variáveis `authBaseUrl` e `orderBaseUrl`.
+
+Por padrão, a collection foi preparada com os seguintes endereços:
+
+- `authBaseUrl = http://localhost:8081`
+- `orderBaseUrl = http://localhost:8082`
+
+Caso as portas ou URLs estejam diferentes no ambiente da avaliação, basta alterar esses dois valores antes da execução.
+
+### 9.4. Execução manual da collection
+
+Para uma avaliação passo a passo, o professor pode executar a collection manualmente, request por request, seguindo a ordem numérica já definida no arquivo.
+
+O procedimento recomendado é:
+
+1. importar a collection no Postman;
+2. ajustar `authBaseUrl` e `orderBaseUrl`, se necessário;
+3. abrir a pasta `01 - Cadastro de Usuarios`;
+4. executar cada request na ordem apresentada;
+5. seguir para a pasta `02 - Autenticacao e Identidade`;
+6. continuar sequencialmente até a pasta `05 - Validacao de Permissoes Reais do Codigo`.
+
+#### 9.4.1. Etapa 1: Cadastro de usuários
+
+Na pasta `01 - Cadastro de Usuarios`, devem ser executados os seguintes requests:
+
+1. `01.01 - Cadastrar CUSTOMER`
+2. `01.02 - Cadastrar ADMIN`
+3. `01.03 - Cadastrar RESTAURANT_OWNER`
+4. `01.04 - Validar duplicidade de CUSTOMER`
+5. `01.05 - Validar role invalida`
+
+Resultados esperados:
+
+- os três primeiros requests devem retornar sucesso e salvar os UUIDs dos usuários;
+- o teste de duplicidade deve retornar erro controlado;
+- o teste com papel inválido também deve retornar erro controlado.
+
+Essa etapa comprova o funcionamento do cadastro e da validação das entradas inválidas.
+
+#### 9.4.2. Etapa 2: Autenticação e identidade
+
+Na pasta `02 - Autenticacao e Identidade`, devem ser executados:
+
+1. `02.01 - Login CUSTOMER`
+2. `02.02 - Login ADMIN`
+3. `02.03 - Login RESTAURANT_OWNER`
+4. `02.04 - CUSTOMER consulta /auth/me`
+5. `02.05 - Refresh CUSTOMER`
+
+Resultados esperados:
+
+- os logins devem retornar sucesso;
+- os tokens devem ser salvos automaticamente para uso nas próximas requisições;
+- `/auth/me` deve comprovar a identidade autenticada;
+- o `refresh` deve validar a renovação da sessão ou do token conforme o comportamento atual do serviço.
+
+#### 9.4.3. Etapa 3: Validação de acesso
+
+Na pasta `03 - Validacao de Acesso`, devem ser executados:
+
+1. `03.01 - /auth/me sem token`
+2. `03.02 - /auth/me com token invalido`
+3. `03.03 - CUSTOMER pode criar pedido`
+4. `03.04 - CUSTOMER pode consultar pedido por UUID`
+5. `03.05 - CUSTOMER nao pode acessar GET /orders`
+6. `03.06 - ADMIN pode acessar GET /orders`
+7. `03.07 - RESTAURANT_OWNER pode acessar GET /orders`
+
+Resultados esperados:
+
+- requisições sem autenticação ou com token inválido devem ser rejeitadas;
+- o perfil `CUSTOMER` deve conseguir criar pedido e consultar pedido por UUID;
+- o perfil `CUSTOMER` deve receber `403 Forbidden` ao tentar acessar `GET /orders`;
+- os perfis `ADMIN` e `RESTAURANT_OWNER` devem conseguir acessar a listagem de pedidos.
+
+Essa etapa evidencia a principal regra de autorização implementada no `order-service`.
+
+#### 9.4.4. Etapa 4: Fluxo de pedidos
+
+Na pasta `04 - Fluxo de Pedidos`, devem ser executados:
+
+1. `04.01 - ADMIN cria pedido`
+2. `04.02 - OWNER cria pedido`
+3. `04.03 - CUSTOMER nao pode listar pedidos`
+4. `04.04 - ADMIN lista pedidos`
+5. `04.05 - RESTAURANT_OWNER lista pedidos`
+
+Resultados esperados:
+
+- `ADMIN` e `RESTAURANT_OWNER` devem conseguir criar pedidos autenticados;
+- `CUSTOMER` deve continuar impedido de listar pedidos;
+- `ADMIN` e `RESTAURANT_OWNER` devem conseguir listar os pedidos normalmente.
+
+#### 9.4.5. Etapa 5: Validação das permissões reais do código
+
+Na pasta `05 - Validacao de Permissoes Reais do Codigo`, devem ser executados:
+
+1. `05.01 - ADMIN consulta pedido do CUSTOMER por UUID`
+2. `05.02 - OWNER consulta pedido do CUSTOMER por UUID`
+3. `05.03 - CUSTOMER consulta pedido do ADMIN por UUID`
+
+Resultados esperados:
+
+- os requests devem retornar sucesso;
+- a etapa demonstra o comportamento atualmente implementado para `GET /orders/{uuid}`, que permanece acessível para usuários autenticados que conheçam o identificador do pedido.
+
+Esse ponto é relevante na documentação porque diferencia claramente a restrição existente na listagem geral da consulta individual por UUID.
+
+### 9.5. Execução automática da collection
+
+Além da execução manual, a collection pode ser executada de forma automática pelo `Collection Runner` do Postman.
+
+O procedimento recomendado é:
+
+1. abrir o Postman;
+2. acessar o recurso `Runner`;
+3. selecionar a collection `ConnectFood Fase 3 - E2E`;
+4. conferir as variáveis `authBaseUrl` e `orderBaseUrl`;
+5. iniciar a execução da collection completa;
+6. acompanhar o relatório final de sucesso e falha dos testes.
+
+Durante a execução automática, o Postman continuará:
+
+- gerando dados dinâmicos;
+- armazenando UUIDs;
+- salvando tokens;
+- reutilizando variáveis automaticamente;
+- validando códigos de resposta esperados em cada cenário.
+
+Essa abordagem é recomendada quando o objetivo é reproduzir toda a suíte de validação com menor intervenção manual.
+
+### 9.6. Síntese do uso da collection pelo professor
+
+Em termos práticos, o uso da collection pelo avaliador pode ser resumido no seguinte fluxo:
+
+1. subir a aplicação;
+2. importar a collection do diretório `docs/collection`;
+3. validar `authBaseUrl` e `orderBaseUrl`;
+4. executar os requests manualmente na ordem numérica ou rodar tudo pelo `Collection Runner`;
+5. observar os testes automáticos embutidos em cada request.
+
+Desse modo, a collection passa a funcionar não apenas como ferramenta de testes, mas também como evidência executável dos fluxos obrigatórios desenvolvidos no projeto.
+
+## 10. Disponibilidade do Kafka UI
+
+Como apoio à análise da comunicação assíncrona da solução, o ambiente também disponibiliza uma interface de visualização do Kafka por meio do `kafka-ui`. Esse recurso permite que o professor acompanhe, de forma visual, os tópicos existentes no ambiente e observe as mensagens produzidas e consumidas durante a execução dos fluxos integrados.
+
+Do ponto de vista acadêmico, essa interface é especialmente útil para demonstrar que a arquitetura orientada a eventos não está apenas descrita na documentação, mas efetivamente operacional durante a execução do projeto.
+
+### 10.1. Finalidade do Kafka UI
+
+O `kafka-ui` pode ser utilizado para:
+
+- visualizar os tópicos configurados no ambiente;
+- inspecionar mensagens publicadas nos tópicos;
+- acompanhar o fluxo de eventos trocados entre os serviços;
+- apoiar a validação dos cenários assíncronos implementados;
+- reforçar, durante a apresentação, o comportamento do sistema orientado a mensageria.
+
+### 10.2. Como o professor pode utilizar
+
+Após subir o ambiente da aplicação, o professor pode acessar o `kafka-ui` pela URL configurada no ambiente local ou conteinerizado. A partir dessa interface, recomenda-se o seguinte procedimento:
+
+1. acessar a interface do `kafka-ui`;
+2. localizar o cluster Kafka configurado para o projeto;
+3. abrir a lista de tópicos disponíveis;
+4. selecionar o tópico desejado;
+5. visualizar as mensagens produzidas durante a execução dos fluxos de autenticação, pedidos e pagamentos, conforme aplicável.
+
+Essa verificação pode ser feita em paralelo à execução da collection Postman, permitindo associar cada ação disparada pela API aos eventos gerados e processados no ecossistema.
+
+### 10.3. Uso combinado com a collection de testes
+
+Durante a execução da collection disponível em `docs/collection`, o professor pode manter o `kafka-ui` aberto para observar o comportamento assíncrono do sistema. Essa abordagem torna a avaliação mais completa, pois permite verificar simultaneamente:
+
+- a resposta síncrona da API;
+- a publicação de eventos nos tópicos Kafka;
+- o consumo dessas mensagens pelos serviços envolvidos;
+- a coerência entre o fluxo documentado e o comportamento observado na execução real.
+
 O enunciado da fase solicita a disponibilizacao de uma collection de testes de endpoints em ferramentas como Postman, Bruno ou Insomnia. Durante a analise do repositório atual, nao foi identificado arquivo de collection versionado.
 
 Do ponto de vista academico, esta secao e importante porque demonstra a capacidade de reproducao e validacao da entrega. Assim, recomenda-se que a versao final da submissao inclua:

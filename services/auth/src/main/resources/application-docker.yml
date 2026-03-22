@@ -26,3 +26,13 @@ auth:
     secret: ${AUTH_JWT_SECRET}
     access-token-ttl-minutes: ${AUTH_JWT_ACCESS_TOKEN_TTL_MINUTES:15}
     refresh-token-ttl-days: ${AUTH_JWT_REFRESH_TOKEN_TTL_DAYS:7}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

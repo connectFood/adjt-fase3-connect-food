@@ -19,6 +19,26 @@ public class ListOrdersByCustomerUseCase {
     this.repository = repository;
   }
 
+  public List<OrderOutput> executeAll() {
+    log.info("I=Listando todos os pedidos");
+    var orders = repository.findAll()
+        .stream()
+        .map(o -> new OrderOutput(
+            o.uuid(),
+            o.customerUuid(),
+            o.restaurantId(),
+            o.status(),
+            o.totalAmount(),
+            o.items()
+                .stream()
+                .map(i -> new OrderOutput.OrderItemOutput(i.itemId(), i.itemName(), i.quantity(), i.unitPrice()))
+                .toList()
+        ))
+        .toList();
+    log.info("I=Listagem de todos os pedidos concluida quantidade={}", orders.size());
+    return orders;
+  }
+
   public List<OrderOutput> execute(UUID customerUuid) {
     log.info("I=Listando pedidos do cliente customerUuid={}", customerUuid);
     var orders = repository.findByCustomerUuid(customerUuid)
@@ -35,7 +55,7 @@ public class ListOrdersByCustomerUseCase {
                 .toList()
         ))
         .toList();
-    log.info("I=Listagem de pedidos concluída customerUuid={} quantidade={}", customerUuid, orders.size());
+    log.info("I=Listagem de pedidos concluida customerUuid={} quantidade={}", customerUuid, orders.size());
     return orders;
   }
 }

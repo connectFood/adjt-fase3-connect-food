@@ -43,6 +43,15 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
   }
 
   @Override
+  public List<Order> findAll() {
+    log.info("I=Consultando todos os pedidos no banco");
+    return jpa.findAll()
+        .stream()
+        .map(OrderInfraMapper::toDomain)
+        .toList();
+  }
+
+  @Override
   public List<Order> findByCustomerUuid(UUID customerUuid) {
     log.info("I=Consultando pedidos no banco por customerUuid={}", customerUuid);
     return jpa.findByCustomerUuid(customerUuid)

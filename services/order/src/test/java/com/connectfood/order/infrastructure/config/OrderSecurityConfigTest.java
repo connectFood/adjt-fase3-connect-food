@@ -100,6 +100,8 @@ class OrderSecurityConfigTest {
         .thenReturn(output);
     Mockito.when(listOrdersByCustomerUseCase.execute(ArgumentMatchers.any()))
         .thenReturn(List.of(output));
+    Mockito.when(listOrdersByCustomerUseCase.executeAll())
+        .thenReturn(List.of(output));
     Mockito.when(createOrderUseCase.execute(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(output);
   }

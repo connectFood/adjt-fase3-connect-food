@@ -47,6 +47,7 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
   public User save(final User user) {
     UserEntity entity = new UserEntity();
     entity.setEnabled(true);
+    entity.setName(user.name());
     entity.setEmail(user.email());
     entity.setPasswordHash(user.passwordHash());
     entity.setEnabled(user.enabled());

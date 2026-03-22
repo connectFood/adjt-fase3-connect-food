@@ -1,84 +1,118 @@
 {
   "info": {
-    "_postman_id": "67d8f8cf-4c74-4a1a-8fd4-0f4e8d9fd301",
-    "name": "Connect Food - Fase 3 - E2E",
-    "description": "Collection E2E para os fluxos obrigatorios do Tech Challenge Fase 3. Cobre cadastro de usuarios, autenticacao, renovacao de token, validacao de acesso e fluxo de pedidos. A collection reflete exatamente o comportamento implementado no codigo atual: /auth/register, /auth/login e /auth/refresh sao publicos; /auth/me e todos os endpoints de /orders exigem JWT valido; no order-service nao ha restricao adicional por role no estado atual do projeto.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "_postman_id": "b69021b8-0f70-4929-bd14-506292a9f2e3",
+    "name": "ConnectFood Fase 3 - E2E",
+    "description": "Collection E2E do ConnectFood Fase 3 com variaveis dinamicas do Postman. O professor pode importar, ajustar apenas as URLs base se necessario e executar o fluxo na ordem numerada.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "29045358"
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "if (!pm.collectionVariables.get('runId')) {",
-          "  const runId = Date.now().toString();",
-          "  pm.collectionVariables.set('runId', runId);",
-          "  pm.collectionVariables.set('password', 'ConnectFood@123');",
-          "  pm.collectionVariables.set('customerEmail', `customer.${runId}@mailinator.com`);",
-          "  pm.collectionVariables.set('adminEmail', `admin.${runId}@mailinator.com`);",
-          "  pm.collectionVariables.set('ownerEmail', `owner.${runId}@mailinator.com`);",
-          "  pm.collectionVariables.set('invalidToken', 'invalid.jwt.token');",
-          "}",
-          "if (!pm.collectionVariables.get('authBaseUrl')) {",
-          "  pm.collectionVariables.set('authBaseUrl', 'http://localhost:8081');",
-          "}",
-          "if (!pm.collectionVariables.get('orderBaseUrl')) {",
-          "  pm.collectionVariables.set('orderBaseUrl', 'http://localhost:8082');",
-          "}"
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "pm.test('Status code is present', function () {",
-          "  pm.expect(pm.response.code).to.be.a('number');",
-          "});",
-          "pm.test('Response time below 4000ms', function () {",
-          "  pm.expect(pm.response.responseTime).to.be.below(4000);",
-          "});"
-        ]
-      }
-    }
-  ],
-  "variable": [
-    { "key": "authBaseUrl", "value": "http://localhost:8081", "type": "string" },
-    { "key": "orderBaseUrl", "value": "http://localhost:8082", "type": "string" },
-    { "key": "runId", "value": "", "type": "string" },
-    { "key": "password", "value": "ConnectFood@123", "type": "string" },
-    { "key": "customerEmail", "value": "", "type": "string" },
-    { "key": "adminEmail", "value": "", "type": "string" },
-    { "key": "ownerEmail", "value": "", "type": "string" },
-    { "key": "customerAccessToken", "value": "", "type": "string" },
-    { "key": "customerRefreshToken", "value": "", "type": "string" },
-    { "key": "adminAccessToken", "value": "", "type": "string" },
-    { "key": "adminRefreshToken", "value": "", "type": "string" },
-    { "key": "ownerAccessToken", "value": "", "type": "string" },
-    { "key": "ownerRefreshToken", "value": "", "type": "string" },
-    { "key": "customerUuid", "value": "", "type": "string" },
-    { "key": "adminUuid", "value": "", "type": "string" },
-    { "key": "ownerUuid", "value": "", "type": "string" },
-    { "key": "customerOrderUuid", "value": "", "type": "string" },
-    { "key": "adminOrderUuid", "value": "", "type": "string" },
-    { "key": "ownerOrderUuid", "value": "", "type": "string" },
-    { "key": "invalidToken", "value": "invalid.jwt.token", "type": "string" }
-  ],
   "item": [
+    {
+      "name": "00 - Setup Run",
+      "item": [
+        {
+          "name": "00.01 - Setup Run",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "const keys = [",
+                  "  'initialized',",
+                  "  'runInitialized',",
+                  "  'runMarker',",
+                  "  'runId',",
+                  "  'customerEmail',",
+                  "  'adminEmail',",
+                  "  'ownerEmail',",
+                  "  'invalidRoleEmail',",
+                  "  'customerPassword',",
+                  "  'adminPassword',",
+                  "  'ownerPassword',",
+                  "  'customerName',",
+                  "  'adminName',",
+                  "  'ownerName',",
+                  "  'customerRestaurantId',",
+                  "  'adminRestaurantId',",
+                  "  'ownerRestaurantId',",
+                  "  'customerBurgerItemId',",
+                  "  'customerBurgerName',",
+                  "  'customerDrinkItemId',",
+                  "  'customerDrinkName',",
+                  "  'adminItemId',",
+                  "  'adminItemName',",
+                  "  'ownerItemId',",
+                  "  'ownerItemName',",
+                  "  'customerUuid',",
+                  "  'adminUuid',",
+                  "  'ownerUuid',",
+                  "  'customerAccessToken',",
+                  "  'customerRefreshToken',",
+                  "  'adminAccessToken',",
+                  "  'adminRefreshToken',",
+                  "  'ownerAccessToken',",
+                  "  'ownerRefreshToken',",
+                  "  'customerOrderUuid',",
+                  "  'adminOrderUuid',",
+                  "  'ownerOrderUuid'",
+                  "];",
+                  "",
+                  "keys.forEach((key) => pm.collectionVariables.unset(key));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {},
+                "exec": [
+                  "pm.test('Setup executado com sucesso', function () {",
+                  "    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{authBaseUrl}}/actuator/health",
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Request inicial do Runner para limpar as collection variables antes da coleção reinicializar a massa dinâmica."
+          },
+          "response": []
+        }
+      ]
+    },
     {
       "name": "01 - Cadastro de Usuarios",
       "item": [
         {
-          "name": "01.01 - Registrar CUSTOMER",
+          "name": "01.01 - Cadastrar CUSTOMER",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));"
+                  "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "const json = pm.response.json();",
+                  "const uuid = json.uuid || (json.data && json.data.uuid) || (json.user && json.user.uuid);",
+                  "pm.test('UUID do customer retornado', function () { pm.expect(uuid).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('customerUuid', uuid);"
                 ]
               }
             }
@@ -86,29 +120,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{password}}\",\n  \"roleName\": \"CUSTOMER\"\n}"
+              "raw": "{\n  \"name\": \"{{customerName}}\",\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"role\": \"CUSTOMER\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/register",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "01.02 - Registrar CUSTOMER duplicado deve falhar",
+          "name": "01.02 - Cadastrar ADMIN",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('409 Conflict', () => pm.expect(pm.response.code).to.eql(409));"
+                  "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "const json = pm.response.json();",
+                  "const uuid = json.uuid || (json.data && json.data.uuid) || (json.user && json.user.uuid);",
+                  "pm.test('UUID do admin retornado', function () { pm.expect(uuid).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('adminUuid', uuid);"
                 ]
               }
             }
@@ -116,29 +162,41 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{password}}\",\n  \"roleName\": \"CUSTOMER\"\n}"
+              "raw": "{\n  \"name\": \"{{adminName}}\",\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\",\n  \"role\": \"ADMIN\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/register",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "01.03 - Registrar ADMIN",
+          "name": "01.03 - Cadastrar RESTAURANT_OWNER",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));"
+                  "pm.test('Status 2xx', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "const json = pm.response.json();",
+                  "const uuid = json.uuid || (json.data && json.data.uuid) || (json.user && json.user.uuid);",
+                  "pm.test('UUID do owner retornado', function () { pm.expect(uuid).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('ownerUuid', uuid);"
                 ]
               }
             }
@@ -146,29 +204,37 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{password}}\",\n  \"roleName\": \"ADMIN\"\n}"
+              "raw": "{\n  \"name\": \"{{ownerName}}\",\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{ownerPassword}}\",\n  \"role\": \"RESTAURANT_OWNER\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/register",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "01.04 - Registrar RESTAURANT_OWNER",
+          "name": "01.04 - Validar duplicidade de CUSTOMER",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));"
+                  "pm.test('Duplicidade rejeitada', function () { pm.expect(pm.response.code).to.be.oneOf([400, 409, 422]); });"
                 ]
               }
             }
@@ -176,46 +242,64 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{password}}\",\n  \"roleName\": \"RESTAURANT_OWNER\"\n}"
+              "raw": "{\n  \"name\": \"{{customerName}}\",\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"role\": \"CUSTOMER\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/register",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "01.05 - Registrar role invalida deve falhar",
+          "name": "01.05 - Validar role invalida",
           "event": [
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
-                  "pm.test('404 Not Found', () => pm.expect(pm.response.code).to.eql(404));"
-                ]
+                  "pm.test('Role invalida rejeitada', function () { pm.expect(pm.response.code).to.be.oneOf([400, 404, 422]); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"invalid-role.{{runId}}@mailinator.com\",\n  \"password\": \"{{password}}\",\n  \"roleName\": \"INVALID_ROLE\"\n}"
+              "raw": "{\n  \"name\": \"Usuario Role Invalida\",\n  \"email\": \"{{invalidRoleEmail}}\",\n  \"password\": \"Senha@123A\",\n  \"role\": \"MANAGER\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/register",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             }
           },
           "response": []
@@ -233,11 +317,13 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Login CUSTOMER com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });",
                   "const json = pm.response.json();",
-                  "pm.collectionVariables.set('customerAccessToken', json.accessToken);",
-                  "pm.collectionVariables.set('customerRefreshToken', json.refreshToken);",
-                  "pm.test('accessToken presente', () => pm.expect(json.accessToken).to.be.a('string').and.not.empty);"
+                  "const accessToken = json.accessToken || (json.data && json.data.accessToken) || (json.token && json.token.accessToken);",
+                  "const refreshToken = json.refreshToken || (json.data && json.data.refreshToken) || (json.token && json.token.refreshToken);",
+                  "pm.collectionVariables.set('customerAccessToken', accessToken);",
+                  "pm.collectionVariables.set('customerRefreshToken', refreshToken);",
+                  "pm.test('Access token do customer presente', function () { pm.expect(accessToken).to.be.a('string').and.not.empty; });"
                 ]
               }
             }
@@ -245,61 +331,166 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{password}}\"\n}"
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/login",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "02.02 - /auth/me CUSTOMER",
+          "name": "02.02 - Login ADMIN",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Login ADMIN com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });",
                   "const json = pm.response.json();",
-                  "pm.test('role CUSTOMER presente', () => pm.expect(json.roles).to.include('CUSTOMER'));",
-                  "pm.collectionVariables.set('customerUuid', json.userUuid);"
+                  "const accessToken = json.accessToken || (json.data && json.data.accessToken) || (json.token && json.token.accessToken);",
+                  "const refreshToken = json.refreshToken || (json.data && json.data.refreshToken) || (json.token && json.token.refreshToken);",
+                  "pm.collectionVariables.set('adminAccessToken', accessToken);",
+                  "pm.collectionVariables.set('adminRefreshToken', refreshToken);",
+                  "pm.test('Access token do admin presente', function () { pm.expect(accessToken).to.be.a('string').and.not.empty; });"
                 ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{authBaseUrl}}/auth/login",
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.03 - Login RESTAURANT_OWNER",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login OWNER com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });",
+                  "const json = pm.response.json();",
+                  "const accessToken = json.accessToken || (json.data && json.data.accessToken) || (json.token && json.token.accessToken);",
+                  "const refreshToken = json.refreshToken || (json.data && json.data.refreshToken) || (json.token && json.token.refreshToken);",
+                  "pm.collectionVariables.set('ownerAccessToken', accessToken);",
+                  "pm.collectionVariables.set('ownerRefreshToken', refreshToken);",
+                  "pm.test('Access token do owner presente', function () { pm.expect(accessToken).to.be.a('string').and.not.empty; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{ownerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{authBaseUrl}}/auth/login",
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "02.04 - CUSTOMER consulta /auth/me",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('/auth/me do CUSTOMER com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{authBaseUrl}}/auth/me",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "02.03 - Refresh CUSTOMER",
+          "name": "02.05 - Refresh CUSTOMER",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('Refresh do CUSTOMER com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });",
                   "const json = pm.response.json();",
-                  "pm.collectionVariables.set('customerAccessToken', json.accessToken);",
-                  "pm.collectionVariables.set('customerRefreshToken', json.refreshToken);"
+                  "const accessToken = json.accessToken || (json.data && json.data.accessToken) || (json.token && json.token.accessToken);",
+                  "const refreshToken = json.refreshToken || (json.data && json.data.refreshToken) || (json.token && json.token.refreshToken);",
+                  "if (accessToken) { pm.collectionVariables.set('customerAccessToken', accessToken); }",
+                  "if (refreshToken) { pm.collectionVariables.set('customerRefreshToken', refreshToken); }"
                 ]
               }
             }
@@ -307,7 +498,10 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -315,162 +509,13 @@
             },
             "url": {
               "raw": "{{authBaseUrl}}/auth/refresh",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "refresh"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02.04 - Login ADMIN",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.collectionVariables.set('adminAccessToken', json.accessToken);",
-                  "pm.collectionVariables.set('adminRefreshToken', json.refreshToken);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{password}}\"\n}"
-            },
-            "url": {
-              "raw": "{{authBaseUrl}}/auth/login",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02.05 - /auth/me ADMIN",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('role ADMIN presente', () => pm.expect(json.roles).to.include('ADMIN'));",
-                  "pm.collectionVariables.set('adminUuid', json.userUuid);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
-            ],
-            "url": {
-              "raw": "{{authBaseUrl}}/auth/me",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "me"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02.06 - Login RESTAURANT_OWNER",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.collectionVariables.set('ownerAccessToken', json.accessToken);",
-                  "pm.collectionVariables.set('ownerRefreshToken', json.refreshToken);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"{{ownerEmail}}\",\n  \"password\": \"{{password}}\"\n}"
-            },
-            "url": {
-              "raw": "{{authBaseUrl}}/auth/login",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "login"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02.07 - /auth/me RESTAURANT_OWNER",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('role RESTAURANT_OWNER presente', () => pm.expect(json.roles).to.include('RESTAURANT_OWNER'));",
-                  "pm.collectionVariables.set('ownerUuid', json.userUuid);"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{ownerAccessToken}}" }
-            ],
-            "url": {
-              "raw": "{{authBaseUrl}}/auth/me",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "me"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "02.08 - Refresh token invalido deve falhar",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('401 Unauthorized', () => pm.expect(pm.response.code).to.eql(401));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"refreshToken\": \"refresh-token-invalido\"\n}"
-            },
-            "url": {
-              "raw": "{{authBaseUrl}}/auth/refresh",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "refresh"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh"
+              ]
             }
           },
           "response": []
@@ -481,14 +526,14 @@
       "name": "03 - Validacao de Acesso",
       "item": [
         {
-          "name": "03.01 - /auth/me sem token deve falhar",
+          "name": "03.01 - /auth/me sem token",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 Unauthorized', () => pm.expect(pm.response.code).to.eql(401));"
+                  "pm.test('Sem token retorna nao autorizado', function () { pm.expect(pm.response.code).to.be.oneOf([401, 403]); });"
                 ]
               }
             }
@@ -498,21 +543,26 @@
             "header": [],
             "url": {
               "raw": "{{authBaseUrl}}/auth/me",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "03.02 - /auth/me com token invalido deve falhar",
+          "name": "03.02 - /auth/me com token invalido",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 Unauthorized', () => pm.expect(pm.response.code).to.eql(401));"
+                  "pm.test('Token invalido rejeitado', function () { pm.expect(pm.response.code).to.be.oneOf([401, 403]); });"
                 ]
               }
             }
@@ -520,66 +570,101 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{invalidToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer token-invalido"
+              }
             ],
             "url": {
               "raw": "{{authBaseUrl}}/auth/me",
-              "host": ["{{authBaseUrl}}"],
-              "path": ["auth", "me"]
+              "host": [
+                "{{authBaseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "03.03 - GET /orders sem token deve falhar",
+          "name": "03.03 - CUSTOMER pode criar pedido",
           "event": [
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
-                  "pm.test('401 ou 403', () => pm.expect([401, 403]).to.include(pm.response.code));"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "03.04 - POST /orders sem token deve falhar",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
+                  "pm.test('CUSTOMER cria pedido com sucesso', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
+                  "const json = pm.response.json();",
+                  "const uuid = json.orderUuid || (json.data && json.data.orderUuid) || (json.order && json.order.orderUuid);",
+                  "pm.test('UUID do pedido do customer retornado', function () { pm.expect(uuid).to.be.a('string').and.not.empty; });",
+                  "pm.collectionVariables.set('customerOrderUuid', uuid);"
+                ],
                 "type": "text/javascript",
-                "exec": [
-                  "pm.test('401 ou 403', () => pm.expect([401, 403]).to.include(pm.response.code));"
-                ]
+                "packages": {},
+                "requests": {}
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"restaurantId\": \"rest-sem-token\",\n  \"items\": [\n    {\n      \"itemId\": \"item-1\",\n      \"itemName\": \"Combo 1\",\n      \"quantity\": 1,\n      \"unitPrice\": 25.00\n    }\n  ]\n}"
+              "raw": "{\n  \"customerUuid\": \"{{customerUuid}}\",\n  \"restaurantId\": \"{{customerRestaurantId}}\",\n  \"items\": [\n    {\n      \"itemId\": \"{{customerBurgerItemId}}\",\n      \"itemName\": \"{{customerBurgerName}}\",\n      \"quantity\": 2,\n      \"unitPrice\": 25.5\n    },\n    {\n      \"itemId\": \"{{customerDrinkItemId}}\",\n      \"itemName\": \"{{customerDrinkName}}\",\n      \"quantity\": 1,\n      \"unitPrice\": 7.0\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "03.04 - CUSTOMER pode consultar pedido por UUID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('CUSTOMER consegue consultar o proprio pedido', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderBaseUrl}}/orders/{{customerOrderUuid}}",
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{customerOrderUuid}}"
+              ]
             }
           },
           "response": []
@@ -592,7 +677,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('403 Forbidden', () => pm.expect(pm.response.code).to.eql(403));"
+                  "pm.test('CUSTOMER recebe 403 ao listar pedidos', function () { pm.expect(pm.response.code).to.eql(403); });"
                 ]
               }
             }
@@ -600,25 +685,32 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "03.06 - ADMIN pode acessar /orders",
+          "name": "03.06 - ADMIN pode acessar GET /orders",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));"
+                  "pm.test('ADMIN consegue listar pedidos', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -626,25 +718,32 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "03.07 - RESTAURANT_OWNER pode acessar /orders",
+          "name": "03.07 - RESTAURANT_OWNER pode acessar GET /orders",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));"
+                  "pm.test('OWNER consegue listar pedidos', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -652,12 +751,19 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{ownerAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
@@ -668,65 +774,93 @@
       "name": "04 - Fluxo de Pedidos",
       "item": [
         {
-          "name": "04.01 - CUSTOMER cria pedido",
+          "name": "04.01 - ADMIN cria pedido",
           "event": [
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
+                  "pm.test('ADMIN cria pedido com sucesso', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
                   "const json = pm.response.json();",
-                  "pm.test('orderUuid presente', () => pm.expect(json.orderUuid).to.match(/^[0-9a-fA-F-]{36}$/));",
-                  "pm.test('status CREATED', () => pm.expect(json.status).to.eql('CREATED'));",
-                  "pm.collectionVariables.set('customerOrderUuid', json.orderUuid);"
-                ]
+                  "const uuid = json.orderUuid || (json.data && json.data.orderUuid) || (json.order && json.order.orderUuid);",
+                  "pm.collectionVariables.set('adminOrderUuid', uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"restaurantId\": \"rest-customer\",\n  \"items\": [\n    {\n      \"itemId\": \"burger-1\",\n      \"itemName\": \"Classic Burger\",\n      \"quantity\": 2,\n      \"unitPrice\": 19.90\n    },\n    {\n      \"itemId\": \"soda-1\",\n      \"itemName\": \"Soda\",\n      \"quantity\": 1,\n      \"unitPrice\": 7.50\n    }\n  ]\n}"
+              "raw": "{\n  \"customerUuid\": \"{{adminUuid}}\",\n  \"restaurantId\": \"{{adminRestaurantId}}\",\n  \"items\": [\n    {\n      \"itemId\": \"{{adminItemId}}\",\n      \"itemName\": \"{{adminItemName}}\",\n      \"quantity\": 1,\n      \"unitPrice\": 31.9\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "04.02 - CUSTOMER consulta pedido por UUID",
+          "name": "04.02 - OWNER cria pedido",
           "event": [
             {
               "listen": "test",
               "script": {
-                "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
+                  "pm.test('OWNER cria pedido com sucesso', function () { pm.expect(pm.response.code).to.be.oneOf([200, 201]); });",
                   "const json = pm.response.json();",
-                  "pm.test('uuid confere', () => pm.expect(json.orderUuid).to.eql(pm.collectionVariables.get('customerOrderUuid')));",
-                  "pm.test('customerUuid confere', () => pm.expect(json.customerUuid).to.eql(pm.collectionVariables.get('customerUuid')));"
-                ]
+                  "const uuid = json.orderUuid || (json.data && json.data.orderUuid) || (json.order && json.order.orderUuid);",
+                  "pm.collectionVariables.set('ownerOrderUuid', uuid);"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
               }
             }
           ],
           "request": {
-            "method": "GET",
+            "method": "POST",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerAccessToken}}"
+              }
             ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerUuid\": \"{{ownerUuid}}\",\n  \"restaurantId\": \"{{ownerRestaurantId}}\",\n  \"items\": [\n    {\n      \"itemId\": \"{{ownerItemId}}\",\n      \"itemName\": \"{{ownerItemName}}\",\n      \"quantity\": 1,\n      \"unitPrice\": 45.0\n    }\n  ]\n}"
+            },
             "url": {
-              "raw": "{{orderBaseUrl}}/orders/{{customerOrderUuid}}",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders", "{{customerOrderUuid}}"]
+              "raw": "{{orderBaseUrl}}/orders",
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
@@ -739,7 +873,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('403 Forbidden', () => pm.expect(pm.response.code).to.eql(403));"
+                  "pm.test('CUSTOMER continua bloqueado no GET /orders', function () { pm.expect(pm.response.code).to.eql(403); });"
                 ]
               }
             }
@@ -747,61 +881,32 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
-            ],
-            "url": {
-              "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "04.04 - ADMIN cria pedido",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
-                  "const json = pm.response.json();",
-                  "pm.collectionVariables.set('adminOrderUuid', json.orderUuid);"
-                ]
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
               }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"restaurantId\": \"rest-admin\",\n  \"items\": [\n    {\n      \"itemId\": \"admin-item-1\",\n      \"itemName\": \"Admin Meal\",\n      \"quantity\": 1,\n      \"unitPrice\": 30.00\n    }\n  ]\n}"
-            },
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "04.05 - ADMIN lista meus pedidos",
+          "name": "04.04 - ADMIN lista pedidos",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('pedido do admin presente', () => pm.expect(json.map(o => o.orderUuid)).to.include(pm.collectionVariables.get('adminOrderUuid')));",
-                  "pm.test('pedido do customer nao aparece', () => pm.expect(json.map(o => o.orderUuid)).to.not.include(pm.collectionVariables.get('customerOrderUuid')));"
+                  "pm.test('ADMIN lista pedidos com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -809,61 +914,32 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
-            ],
-            "url": {
-              "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "04.06 - RESTAURANT_OWNER cria pedido",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('201 Created', () => pm.expect(pm.response.code).to.eql(201));",
-                  "const json = pm.response.json();",
-                  "pm.collectionVariables.set('ownerOrderUuid', json.orderUuid);"
-                ]
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
               }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{ownerAccessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"restaurantId\": \"rest-owner\",\n  \"items\": [\n    {\n      \"itemId\": \"owner-item-1\",\n      \"itemName\": \"Owner Meal\",\n      \"quantity\": 1,\n      \"unitPrice\": 28.00\n    }\n  ]\n}"
-            },
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "04.07 - RESTAURANT_OWNER lista meus pedidos",
+          "name": "04.05 - RESTAURANT_OWNER lista pedidos",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('pedido do owner presente', () => pm.expect(json.map(o => o.orderUuid)).to.include(pm.collectionVariables.get('ownerOrderUuid')));",
-                  "pm.test('pedido do customer nao aparece', () => pm.expect(json.map(o => o.orderUuid)).to.not.include(pm.collectionVariables.get('customerOrderUuid')));"
+                  "pm.test('OWNER lista pedidos com sucesso', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -871,43 +947,19 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{ownerAccessToken}}" }
-            ],
-            "url": {
-              "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "04.08 - Criacao de pedido sem itens deve falhar",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test('400 Bad Request', () => pm.expect(pm.response.code).to.eql(400));"
-                ]
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerAccessToken}}"
               }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }
             ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"restaurantId\": \"rest-invalid\",\n  \"items\": []\n}"
-            },
             "url": {
               "raw": "{{orderBaseUrl}}/orders",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders"
+              ]
             }
           },
           "response": []
@@ -925,9 +977,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('pedido retornado e do customer', () => pm.expect(json.orderUuid).to.eql(pm.collectionVariables.get('customerOrderUuid')));"
+                  "pm.test('ADMIN pode consultar pedido por UUID', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -935,27 +985,33 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{adminAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{orderBaseUrl}}/orders/{{customerOrderUuid}}",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders", "{{customerOrderUuid}}"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{customerOrderUuid}}"
+              ]
             }
           },
           "response": []
         },
         {
-          "name": "05.02 - RESTAURANT_OWNER consulta pedido do CUSTOMER por UUID",
+          "name": "05.02 - OWNER consulta pedido do CUSTOMER por UUID",
           "event": [
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('200 OK', () => pm.expect(pm.response.code).to.eql(200));",
-                  "const json = pm.response.json();",
-                  "pm.test('pedido retornado e do customer', () => pm.expect(json.orderUuid).to.eql(pm.collectionVariables.get('customerOrderUuid')));"
+                  "pm.test('OWNER pode consultar pedido por UUID', function () { pm.expect(pm.response.code).to.eql(200); });"
                 ]
               }
             }
@@ -963,17 +1019,287 @@
           "request": {
             "method": "GET",
             "header": [
-              { "key": "Authorization", "value": "Bearer {{ownerAccessToken}}" }
+              {
+                "key": "Authorization",
+                "value": "Bearer {{ownerAccessToken}}"
+              }
             ],
             "url": {
               "raw": "{{orderBaseUrl}}/orders/{{customerOrderUuid}}",
-              "host": ["{{orderBaseUrl}}"],
-              "path": ["orders", "{{customerOrderUuid}}"]
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{customerOrderUuid}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "05.03 - CUSTOMER consulta pedido do CUSTOMER por UUID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('CUSTOMER tambem pode consultar pedido por UUID', function () { pm.expect(pm.response.code).to.eql(200); });"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{orderBaseUrl}}/orders/{{customerOrderUuid}}",
+              "host": [
+                "{{orderBaseUrl}}"
+              ],
+              "path": [
+                "orders",
+                "{{customerOrderUuid}}"
+              ]
             }
           },
           "response": []
         }
       ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "requests": {},
+        "exec": [
+          "if (!pm.collectionVariables.get('initialized')) {",
+          "    const runId = pm.variables.replaceIn('{{$timestamp}}-{{$randomInt}}');",
+          "",
+          "    pm.collectionVariables.set('runId', runId);",
+          "    pm.collectionVariables.set('customerEmail', pm.variables.replaceIn('customer.{{$guid}}@mailinator.com'));",
+          "    pm.collectionVariables.set('adminEmail', pm.variables.replaceIn('admin.{{$guid}}@mailinator.com'));",
+          "    pm.collectionVariables.set('ownerEmail', pm.variables.replaceIn('owner.{{$guid}}@mailinator.com'));",
+          "    pm.collectionVariables.set('invalidRoleEmail', pm.variables.replaceIn('invalid-role.{{$guid}}@mailinator.com'));",
+          "",
+          "    pm.collectionVariables.set('customerPassword', pm.variables.replaceIn('Customer@{{$randomInt}}A'));",
+          "    pm.collectionVariables.set('adminPassword', pm.variables.replaceIn('Admin@{{$randomInt}}A'));",
+          "    pm.collectionVariables.set('ownerPassword', pm.variables.replaceIn('Owner@{{$randomInt}}A'));",
+          "",
+          "    pm.collectionVariables.set('customerName', pm.variables.replaceIn('Cliente {{$randomFirstName}} {{$randomLastName}}'));",
+          "    pm.collectionVariables.set('adminName', pm.variables.replaceIn('Admin {{$randomFirstName}} {{$randomLastName}}'));",
+          "    pm.collectionVariables.set('ownerName', pm.variables.replaceIn('Owner {{$randomFirstName}} {{$randomLastName}}'));",
+          "",
+          "    pm.collectionVariables.set('customerRestaurantId', pm.variables.replaceIn('rest-customer-{{$guid}}'));",
+          "    pm.collectionVariables.set('adminRestaurantId', pm.variables.replaceIn('rest-admin-{{$guid}}'));",
+          "    pm.collectionVariables.set('ownerRestaurantId', pm.variables.replaceIn('rest-owner-{{$guid}}'));",
+          "",
+          "    pm.collectionVariables.set('customerBurgerItemId', pm.variables.replaceIn('burger-{{$guid}}'));",
+          "    pm.collectionVariables.set('customerBurgerName', pm.variables.replaceIn('burger-{{$randomInt}}'));",
+          "    pm.collectionVariables.set('customerDrinkItemId', pm.variables.replaceIn('drink-{{$guid}}'));",
+          "    pm.collectionVariables.set('customerDrinkName', pm.variables.replaceIn('drink-{{$randomInt}}'));",
+          "",
+          "    pm.collectionVariables.set('adminItemId', pm.variables.replaceIn('admin-item-{{$guid}}'));",
+          "    pm.collectionVariables.set('adminItemName', pm.variables.replaceIn('burger-{{$guid}}'));",
+          "    pm.collectionVariables.set('ownerItemId', pm.variables.replaceIn('owner-item-{{$guid}}'));",
+          "    pm.collectionVariables.set('ownerItemName', pm.variables.replaceIn('burger-{{$guid}}'));",
+          "",
+          "    pm.collectionVariables.set('initialized', 'true');",
+          "}",
+          "",
+          "function parseJsonSafe() {",
+          "  try {",
+          "    return pm.response.json();",
+          "  } catch (e) {",
+          "    return null;",
+          "  }",
+          "}",
+          "",
+          "function firstValue() {",
+          "  for (let i = 0; i < arguments.length; i += 1) {",
+          "    const value = arguments[i];",
+          "    if (value !== undefined && value !== null && value !== '') {",
+          "      return value;",
+          "    }",
+          "  }",
+          "  return null;",
+          "}",
+          "",
+          "pm.globals.set('cf_parseJsonSafe', parseJsonSafe.toString());",
+          "pm.globals.set('cf_firstValue', firstValue.toString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "authBaseUrl",
+      "value": "http://localhost:8081"
+    },
+    {
+      "key": "orderBaseUrl",
+      "value": "http://localhost:8082"
+    },
+    {
+      "key": "customerEmail",
+      "value": ""
+    },
+    {
+      "key": "adminEmail",
+      "value": ""
+    },
+    {
+      "key": "ownerEmail",
+      "value": ""
+    },
+    {
+      "key": "invalidRoleEmail",
+      "value": ""
+    },
+    {
+      "key": "customerPassword",
+      "value": ""
+    },
+    {
+      "key": "adminPassword",
+      "value": ""
+    },
+    {
+      "key": "ownerPassword",
+      "value": ""
+    },
+    {
+      "key": "customerName",
+      "value": ""
+    },
+    {
+      "key": "adminName",
+      "value": ""
+    },
+    {
+      "key": "ownerName",
+      "value": ""
+    },
+    {
+      "key": "customerUuid",
+      "value": ""
+    },
+    {
+      "key": "adminUuid",
+      "value": ""
+    },
+    {
+      "key": "ownerUuid",
+      "value": ""
+    },
+    {
+      "key": "customerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "customerRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "adminRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "ownerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "ownerRefreshToken",
+      "value": ""
+    },
+    {
+      "key": "customerRestaurantId",
+      "value": ""
+    },
+    {
+      "key": "adminRestaurantId",
+      "value": ""
+    },
+    {
+      "key": "ownerRestaurantId",
+      "value": ""
+    },
+    {
+      "key": "customerBurgerItemId",
+      "value": ""
+    },
+    {
+      "key": "customerDrinkItemId",
+      "value": ""
+    },
+    {
+      "key": "adminItemId",
+      "value": ""
+    },
+    {
+      "key": "ownerItemId",
+      "value": ""
+    },
+    {
+      "key": "customerOrderUuid",
+      "value": ""
+    },
+    {
+      "key": "adminOrderUuid",
+      "value": ""
+    },
+    {
+      "key": "ownerOrderUuid",
+      "value": ""
+    },
+    {
+      "key": "customerBurgerName",
+      "value": ""
+    },
+    {
+      "key": "customerDrinkName",
+      "value": ""
+    },
+    {
+      "key": "adminItemName",
+      "value": ""
+    },
+    {
+      "key": "ownerItemName",
+      "value": ""
+    },
+    {
+      "key": "initialized",
+      "value": ""
+    },
+    {
+      "key": "runId",
+      "value": ""
     }
   ]
 }

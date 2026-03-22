@@ -33,3 +33,13 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
     operationsSorter: method
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true

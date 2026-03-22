@@ -1,9 +1,9 @@
 package com.connectfood.auth.application.dto;
 
-public record RegisterUserInput(
+public record RegisterUserOutput(
+    String uuid,
     String name,
     String email,
-    String password,
-    String roleName
+    String role
 ) {
 }

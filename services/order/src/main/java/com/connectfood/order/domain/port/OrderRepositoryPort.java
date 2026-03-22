@@ -12,6 +12,8 @@ public interface OrderRepositoryPort {
 
   Optional<Order> findByUuid(UUID uuid);
 
+  List<Order> findAll();
+
   List<Order> findByCustomerUuid(UUID customerUuid);
 
   boolean updateStatusByUuid(UUID orderUuid, OrderStatus status);

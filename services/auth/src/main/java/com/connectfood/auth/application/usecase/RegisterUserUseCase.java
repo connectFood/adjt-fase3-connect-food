@@ -3,6 +3,7 @@ package com.connectfood.auth.application.usecase;
 import java.util.Set;
 
 import com.connectfood.auth.application.dto.RegisterUserInput;
+import com.connectfood.auth.application.dto.RegisterUserOutput;
 import com.connectfood.auth.application.security.PasswordHasher;
 import com.connectfood.auth.domain.exception.ConflictException;
 import com.connectfood.auth.domain.exception.NotFoundException;
@@ -33,7 +34,7 @@ public class RegisterUserUseCase {
     this.passwordHasher = passwordHasher;
   }
 
-  public User execute(final RegisterUserInput input) {
+  public RegisterUserOutput execute(final RegisterUserInput input) {
     log.info("I=Iniciando cadastro de usuario, email={}", input.email());
     validateExists(input.email());
 
@@ -43,7 +44,12 @@ public class RegisterUserUseCase {
     final var user = userRepository.save(mapUser(input, role));
 
     log.info("I=Usuario cadastrado com sucesso, email={}", input.email());
-    return user;
+    return new RegisterUserOutput(
+        user.uuid().toString(),
+        user.name(),
+        user.email(),
+        user.roles().stream().findFirst().map(Role::name).orElseThrow()
+    );
   }
 
   private void validateExists(final String email) {
@@ -56,6 +62,7 @@ public class RegisterUserUseCase {
   private User mapUser(final RegisterUserInput input, final Role role) {
     return new User(
         null,
+        input.name(),
         input.email(),
         passwordHasher.hash(input.password()),
         true,

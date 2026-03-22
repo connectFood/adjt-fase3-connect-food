@@ -7,6 +7,7 @@ import com.connectfood.auth.entrypoint.rest.dto.LoginRequest;
 import com.connectfood.auth.entrypoint.rest.dto.MeResponse;
 import com.connectfood.auth.entrypoint.rest.dto.RefreshRequest;
 import com.connectfood.auth.entrypoint.rest.dto.RegisterRequest;
+import com.connectfood.auth.entrypoint.rest.dto.RegisterResponse;
 import com.connectfood.auth.entrypoint.rest.dto.AuthResponse;
 import com.connectfood.auth.entrypoint.rest.mapper.AuthRestMapper;
 
@@ -40,10 +41,10 @@ public class AuthController {
   }
 
   @PostMapping("/register")
-  public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
-    registerUserUseCase.execute(AuthRestMapper.toInput(request));
+  public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+    var output = registerUserUseCase.execute(AuthRestMapper.toInput(request));
     return ResponseEntity.status(201)
-        .build();
+        .body(AuthRestMapper.toResponse(output));
   }
 
   @PostMapping("/login")
